@@ -9,13 +9,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 def create_driver():
     load_dotenv()
     url = os.getenv("url")
-    if not url:
-        raise ValueError("URL tidak ditemukan di file .env")
-
-    brave_path = "/usr/bin/brave-browser"
-    chromedriver_path = (
-        "/home/restu/Downloads/chromedriver138/chromedriver-linux64/chromedriver"
-    )
+    brave_path = os.getenv("brave")
+    chromedriver_path = os.getenv("driver")
+    if not url or not brave_path or not chromedriver_path:
+        raise ValueError("ENV tidak ditemukan")
 
     options = Options()
     options.binary_location = brave_path
@@ -23,12 +20,9 @@ def create_driver():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
 
-    try:
-        driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
-        driver.maximize_window()
-        wait = WebDriverWait(driver, 15)
-        print("✅ Driver berhasil dibuat")
-        return driver, wait, url
-    except Exception as e:
-        print("❌ Gagal membuat driver:", str(e))
-        raise
+    driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
+    driver.maximize_window()
+    wait = WebDriverWait(driver, 15)
+
+    print("✅ Driver berhasil dibuat")
+    return driver, wait, url
