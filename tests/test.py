@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from components.href_button import href_button
 from helpers.driver_setup import create_driver
 from helpers.login_helper import login
+from helpers.logout_helper import logout
+import time
 
 
 class TestPengamanan(unittest.TestCase):
@@ -28,6 +30,9 @@ class TestPengamanan(unittest.TestCase):
 
         login(self.driver, user, password)
         href_button(self.driver, "pages.php?Pg=pemeliharaan_daftar")
+        logout(self.driver)
+        
+        time.sleep(3) # agar keliahatan apakah sudah logout atau belum
 
 
 if __name__ == "__main__":
