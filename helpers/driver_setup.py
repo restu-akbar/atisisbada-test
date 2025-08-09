@@ -24,5 +24,4 @@ def create_driver():
     driver.maximize_window()
     wait = WebDriverWait(driver, 15)
 
-    print("✅ Driver berhasil dibuat")
     return driver, wait, url
