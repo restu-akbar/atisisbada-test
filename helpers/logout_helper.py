@@ -14,7 +14,4 @@ def logout(driver):
     wait.until(
         EC.presence_of_element_located((By.XPATH, "/html/body/div[4]/span[3]/span/img"))
     )
-    print("✅ Berhasil membuka halaman utama untuk logout")
     button(driver, By.XPATH, "/html/body/div[4]/span[3]/span/img")
-
-    print("✅ Berhasil logout")
