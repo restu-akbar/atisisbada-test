@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from components.form_input import form_input
 from components.button import button
 from components.checkbox import checkbox
@@ -15,9 +14,11 @@ from helpers.nama_pemakai_check import nama_pemakai_check
 from pages.login_page import LoginPage
 from pages.modul_pengamanan_page import ModulPengamananPage
 import time
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 
-class TC_PNED(unittest.TestCase):
+class TC_PNBT(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.driver, cls.wait, cls.url = create_driver()
@@ -44,8 +45,8 @@ class TC_PNED(unittest.TestCase):
         self.nibar = "167192"
         self.nama_pemakai = None
 
-    def test_TC_PNED_001(self):
-        print("TC_PNED_001")
+    def test_TC_PNBT_001(self):
+        print("TC_PNBT_001")
         driver = self.driver
         driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
         page = ModulPengamananPage(driver)
@@ -57,42 +58,36 @@ class TC_PNED(unittest.TestCase):
         time.sleep(1)
         checkbox(driver, identifier=0, by="index", table_selector="table.koptable")
         time.sleep(1)
-        href_button(driver, "javascript:pengamananPeralatanTrans.formEdit()")
-        time.sleep(1)
-        no_ktp_baru = "9765"
-        form_input(driver, By.ID, "fmno_ktp_pemakai", no_ktp_baru)
-        time.sleep(1)
-        button(driver, By.ID, "btSimpan")
-        time.sleep(1)
-        filter_nibar(driver, "167192")
-        time.sleep(1)
-        row_tds = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located(
-                (By.XPATH, "//table[@class='koptable']//tbody/tr[1]/td")
-            )
-        )
+        href_button(driver, "javascript:pengamananPeralatanTrans.Hapus()")
+        try:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        except TimeoutException:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        alert.accept()
 
-        TC_PNED.nama_pemakai = row_tds[7].text
-        cell_value = row_tds[10].text
-
-        assert cell_value == no_ktp_baru, (
-            f"[❌] Gagal: nilai no ktp pemakai = {cell_value}, expected = {no_ktp_baru}"
-        )
+        try:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        except TimeoutException:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        alert_text = alert.text
+        assert "Sukses Hapus Data" in alert_text, f"❌ Alert tidak sesuai: {alert_text}"
+        alert.accept()
         print(
-            f"[✅] TC_PNED_001 berhasil — Nomor Identitas Pemakai yang diperbarui = {cell_value}"
+            f"[✅] TC_PNBT_001 berhasil — Pemakaian dengan nibar {self.nibar} terhapus"
         )
         print(
             "========================================================================"
         )
 
-    #     def test_TC_PNED_002(self):
-    def test_TC_PNED_003(self):
-        print("TC_PNED_003")
-        nama_pemakai = nama_pemakai_check(self)
-        assert nama_pemakai == TC_PNED.nama_pemakai, (
-            f"[❌] Gagal: nama pemakai berbeda dengan di pm pemakaian = {nama_pemakai}, expected = {self.nama_pemakai}"
+    #     def test_TC_PNBT_002(self):
+
+    def test_TC_PNBT_002(self):
+        print("TC_PNBT_002")
+        self.assertFalse(
+            nama_pemakai_check(self).strip(),
+            "[❌] Gagal: nama pemakai masih ada",
         )
-        print(f"[✅] TC_PNED_003 berhasil — Nama Identitas Pemakai = {nama_pemakai}")
+        print("[✅] TC_PNBT_002 berhasil — Nama Identitas Pemakai sudah tidak ada")
         print(
             "========================================================================"
         )
