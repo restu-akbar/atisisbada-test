@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
+from components.button import button
 from components.form_input import FormInput
-from components.button import Button
 
 
 class LoginPage:
@@ -14,5 +14,4 @@ class LoginPage:
         password_input = FormInput(self.driver, By.ID, "password")
         password_input.enter_text(password)
 
-        login_button = Button(self.driver, By.ID, "bt_ok")
-        login_button.click()
+        button(self.driver, By.ID, "bt_ok")
