@@ -15,3 +15,4 @@ def logout(driver):
         EC.presence_of_element_located((By.XPATH, "/html/body/div[4]/span[3]/span/img"))
     )
     button(driver, By.XPATH, "/html/body/div[4]/span[3]/span/img")
+    time.sleep(2)

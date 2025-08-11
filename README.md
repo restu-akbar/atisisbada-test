@@ -7,4 +7,4 @@ Set up
 
 
 contoh untuk Running
-python -m unittest tests/test_pengamanan.py
+python -m unittest tests/TC_PNPE.py
