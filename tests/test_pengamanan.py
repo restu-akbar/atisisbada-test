@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from helpers.driver_setup import create_driver
 from helpers.logout_helper import logout
+from components.checkbox import checkbox
 from components.dropdown import Dropdown
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -39,7 +40,7 @@ class TestPengamanan(unittest.TestCase):
         page = ModulPengamananPage(self.driver)
         self.assertTrue(page.is_loaded(page_name="Pengamanan"), "❌ Modul Pengamanan gagal dimuat")
         time.sleep(2)
-        self.driver.execute_script("document.body.style.zoom='80%'")
+        self.driver.execute_script("document.body.style.zoom='70%'")
 
         
     def test_TC_PNBR_004(self):
@@ -52,7 +53,7 @@ class TestPengamanan(unittest.TestCase):
         time.sleep(2)
         
         time.sleep(2)
-        driver.find_element(By.ID,"pengamananPeralatan_cb0").click()
+        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
         driver.find_element(By.CLASS_NAME,"toolbar").click()
         time.sleep(1)
@@ -71,7 +72,7 @@ class TestPengamanan(unittest.TestCase):
         time.sleep(3)
         driver.find_element(By.ID,"fmnama_pemakai_button").click()
         time.sleep(2)
-        driver.find_element(By.ID,"PegawaiPilih_cb0").click()
+        checkbox(driver, identifier=1, by="index", table_selector="#PegawaiPilih_cont_daftar > table")
         time.sleep(2)
         pilih_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)'))
@@ -232,7 +233,7 @@ class TestPengamanan(unittest.TestCase):
         time.sleep(2)
         driver.find_element(By.ID,"fmdiinput_nama_button").click()
         time.sleep(2)
-        driver.find_element(By.ID,"PegawaiPilih_cb1").click()
+        checkbox(driver, identifier=2, by="index", table_selector="#PegawaiPilih_cont_daftar > table")
         time.sleep(1)
         
         pilih_button = WebDriverWait(driver, 10).until(
@@ -278,7 +279,7 @@ class TestPengamanan(unittest.TestCase):
         time.sleep(2)
         driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
         time.sleep(2)
-        driver.execute_script("document.body.style.zoom='80%'")
+        driver.execute_script("document.body.style.zoom='70%'")
         time.sleep(3)
         pass
     
@@ -287,7 +288,7 @@ class TestPengamanan(unittest.TestCase):
         print("test_TC_PNBR_017")
         driver.get(f"{self.url}index.php?Pg=05&SPg=05&jns=tetap")
         time.sleep(2)
-        driver.find_element(By.ID,"cb0").click()
+        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         driver.execute_script("document.body.style.zoom='80%'")
         time.sleep(5)
         pass
@@ -302,7 +303,7 @@ class TestPengamanan(unittest.TestCase):
         driver.find_element(By.ID,"btTampil").click()
         time.sleep(2)
         
-        driver.find_element(By.ID,"pengamananPeralatan_cb0").click()
+        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         driver.find_element(By.CLASS_NAME,"toolbar").click()
         
         time.sleep(2)

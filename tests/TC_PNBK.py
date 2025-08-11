@@ -54,7 +54,7 @@ class TestPengamanan(unittest.TestCase):
         driver.find_element(By.ID,"btTampil").click()
         
         time.sleep(2)
-        driver.find_element(By.ID,"pengamananPeralatanTrans_cb0").click()
+        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
         
         self.driver.find_element(By.PARTIAL_LINK_TEXT,"Kembali").click()
@@ -180,7 +180,7 @@ class TestPengamanan(unittest.TestCase):
         button(driver, By.ID, "fmpenerima_nama_button")
         
         time.sleep(2)
-        driver.find_element(By.ID,"PegawaiPilih_cb0").click()
+        checkbox(self.driver, identifier=1, by="index", table_selector="#PegawaiPilih_cont_daftar > table")
         time.sleep(2)
         pilih_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)'))
@@ -254,7 +254,7 @@ class TestPengamanan(unittest.TestCase):
         
         button(driver, By.ID, "fmdiinput_nama_button")
         time.sleep(2)
-        driver.find_element(By.ID,"PegawaiPilih_cb1").click()
+        checkbox(self.driver, identifier=2, by="index", table_selector="#PegawaiPilih_cont_daftar > table")
         time.sleep(2)
         pilih_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)'))
@@ -279,7 +279,7 @@ class TestPengamanan(unittest.TestCase):
         self.driver.get(f"{self.url}pages.php?Pg=pengembalianPeralatan")
         self.driver.execute_script("document.body.style.zoom='80%'")
         time.sleep(3)
-        self.driver.find_element(By.ID,"pengembalianPeralatan_cb0").click()
+        checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(3)
         self.driver.find_element(By.PARTIAL_LINK_TEXT,"Batal").click()
         time.sleep(3)
