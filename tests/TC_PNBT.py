@@ -1,10 +1,7 @@
 import unittest
 import os
 from dotenv import load_dotenv
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from components.form_input import form_input
-from components.button import button
 from components.checkbox import checkbox
 from components.href_button import href_button
 from helpers.driver_setup import create_driver
@@ -42,11 +39,11 @@ class TC_PNBT(unittest.TestCase):
     #         cls.driver.quit()
 
     def setUp(self):
-        self.nibar = "167192"
+        load_dotenv()
+        self.nibar = os.getenv("nibar")
         self.nama_pemakai = None
 
-    def test_TC_PNBT_001(self):
-        print("TC_PNBT_001")
+    def batal_helper(self):
         driver = self.driver
         driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
         page = ModulPengamananPage(driver)
@@ -59,6 +56,11 @@ class TC_PNBT(unittest.TestCase):
         checkbox(driver, identifier=0, by="index", table_selector="table.koptable")
         time.sleep(1)
         href_button(driver, "javascript:pengamananPeralatanTrans.Hapus()")
+
+    def test_TC_PNBT_001(self):
+        print("TC_PNBT_001")
+        self.batal_helper()
+        driver = self.driver
         try:
             alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
         except TimeoutException:
@@ -79,8 +81,6 @@ class TC_PNBT(unittest.TestCase):
             "========================================================================"
         )
 
-    #     def test_TC_PNBT_002(self):
-
     def test_TC_PNBT_002(self):
         print("TC_PNBT_002")
         self.assertFalse(
@@ -88,6 +88,31 @@ class TC_PNBT(unittest.TestCase):
             "[❌] Gagal: nama pemakai masih ada",
         )
         print("[✅] TC_PNBT_002 berhasil — Nama Identitas Pemakai sudah tidak ada")
+        print(
+            "========================================================================"
+        )
+
+    def test_TC_PNBT_003(self):
+        print("TC_PNBT_003")
+        self.batal_helper()
+        driver = self.driver
+        try:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        except TimeoutException:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        alert.accept()
+        try:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        except TimeoutException:
+            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        alert_text = alert.text
+        assert "Tidak bisa dibatalkan, sudah Pengembalian!" in alert_text, (
+            f"❌ Alert tidak sesuai: {alert_text}"
+        )
+        alert.accept()
+        print(
+            f"[✅] TC_PNBT_003 berhasil — Pemakaian dengan nibar {self.nibar} terhapus"
+        )
         print(
             "========================================================================"
         )

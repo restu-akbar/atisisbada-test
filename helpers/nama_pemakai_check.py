@@ -22,9 +22,14 @@ def nama_pemakai_check(self):
     time.sleep(1)
     href_button(driver, "javascript:prosesEdit()")
     driver.switch_to.window(driver.window_handles[-1])
-    nama_pemakai = (
-        WebDriverWait(driver, 10)
-        .until(EC.presence_of_element_located((By.ID, "nama2")))
-        .get_attribute("value")
-    )
-    return nama_pemakai
+
+    try:
+        nama_pemakai = (
+            WebDriverWait(driver, 10)
+            .until(EC.presence_of_element_located((By.ID, "nama2")))
+            .get_attribute("value")
+        )
+        return nama_pemakai or ""
+    except Exception as e:
+        print(f"Gagal mengambil nama pemakai: {e}")
+        return ""

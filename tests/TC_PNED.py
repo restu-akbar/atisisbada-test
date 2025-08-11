@@ -41,7 +41,8 @@ class TC_PNED(unittest.TestCase):
     #         cls.driver.quit()
 
     def setUp(self):
-        self.nibar = "167192"
+        load_dotenv()
+        self.nibar = os.getenv("nibar")
         self.nama_pemakai = None
 
     def test_TC_PNED_001(self):
@@ -64,7 +65,7 @@ class TC_PNED(unittest.TestCase):
         time.sleep(1)
         button(driver, By.ID, "btSimpan")
         time.sleep(1)
-        filter_nibar(driver, "167192")
+        filter_nibar(driver, self.nibar)
         time.sleep(1)
         row_tds = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located(

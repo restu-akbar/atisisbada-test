@@ -2,6 +2,7 @@ import unittest
 import os
 from dotenv import load_dotenv
 from helpers.driver_setup import create_driver
+from helpers.filter_nibar import filter_nibar
 from helpers.logout_helper import logout
 from components.dropdown import Dropdown
 from selenium.webdriver.common.by import By
@@ -32,6 +33,9 @@ class TestPengamanan(unittest.TestCase):
     def tearDownClass(cls):
         cls.driver.quit()
 
+    def setUp(self):
+        load_dotenv()
+        self.nibar = os.getenv("nibar") 
     #test_buka_modul_pengamanan(self): (ini di ubah karena unit testing di jalankan nya secara alphabetical order)
     #ini pembeda nya jadi dari angka terakhir 000,001,002,etc
     def test_TC_PNBR_000(self):
@@ -46,11 +50,7 @@ class TestPengamanan(unittest.TestCase):
         driver = self.driver
         print("test_TC_PNBR_004")
         
-        driver.find_element(By.ID,"fmMerk").send_keys("TOYOTA INNOVA E")
-        time.sleep(1)
-        driver.find_element(By.ID,"btTampil").click()
-        time.sleep(2)
-        
+        filter_nibar(driver, self.nibar) 
         time.sleep(2)
         driver.find_element(By.ID,"pengamananPeralatan_cb0").click()
         time.sleep(1)
@@ -297,11 +297,7 @@ class TestPengamanan(unittest.TestCase):
         print("test_TC_PNBR_018")
         self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatan")
         time.sleep(3)
-        driver.find_element(By.ID,"fmMerk").send_keys("TOYOTA INNOVA E")
-        time.sleep(2)
-        driver.find_element(By.ID,"btTampil").click()
-        time.sleep(2)
-        
+        filter_nibar(driver, self.nibar) 
         driver.find_element(By.ID,"pengamananPeralatan_cb0").click()
         driver.find_element(By.CLASS_NAME,"toolbar").click()
         
