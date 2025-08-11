@@ -1,20 +1,13 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from helpers.print_result import print_result
+from selenium.webdriver.common.alert import Alert
+import unittest
 
-
-class AlertHandler:
-    def __init__(self, driver, timeout=10):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, timeout)
-
-    def accept_alert(self):
-        alert = self.wait.until(EC.alert_is_present())
-        alert.accept()
-
-    def dismiss_alert(self):
-        alert = self.wait.until(EC.alert_is_present())
-        alert.dismiss()
-
-    def get_alert_text(self):
-        alert = self.wait.until(EC.alert_is_present())
-        return alert.text
+        
+def alert_handle(self, alert, expected_msg, test_name="TEST_CASE"):
+    alert_text = alert.text
+    print(f"ℹ️ Alert muncul: {alert_text}")
+    self.assertEqual(alert_text, expected_msg, f"Teks alert tidak sesuai, dapat: {alert_text}")
+    print_result(alert_text, expected_msg, test_name)
+    alert.accept()
