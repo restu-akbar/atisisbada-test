@@ -11,7 +11,7 @@ from components.form_input import form_input
 def filter_nibar(driver, text, timeout=10):
     wait = WebDriverWait(driver, timeout)
     wait.until(EC.visibility_of_element_located((By.ID, "fmFiltNibar")))
-    time.sleep(0.5)
+    time.sleep(1)
     form_input(driver, By.ID, "fmFiltNibar", text)
-    time.sleep(0.5)
+    time.sleep(1)
     button(driver, By.ID, "btTampil")
