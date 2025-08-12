@@ -19,6 +19,7 @@ def create_driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
+    #     options.add_argument("--headless")
 
     driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
     driver.maximize_window()

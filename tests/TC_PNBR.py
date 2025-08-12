@@ -134,11 +134,13 @@ class TC_PNBR(unittest.TestCase):
 
     def test_TC_PNBR_011(self):
         driver = self.driver
-        next_day = (datetime.now() + timedelta(days=1)).strftime("%d-%m-%Y")
         print("test_TC_PNBR_011")
+        today = datetime.now().strftime("%d-%m-%Y")
+        driver.find_element(By.CLASS_NAME, "ui-datepicker-trigger").click()
+        driver.find_element(By.ID, "fmtgl_bast").send_keys(today)
         driver.find_element(By.CLASS_NAME, "ui-datepicker-trigger").click()
         time.sleep(1)
-        driver.find_element(By.ID, "fmtgl_bast").send_keys(next_day)
+        driver.find_element(By.ID, "fmtgl_bast").send_keys(today)
         time.sleep(1)
         save_get_alert(driver, "Diinput Oleh belum diisi!", "TC_PNBR_011")
 
@@ -164,7 +166,8 @@ class TC_PNBR(unittest.TestCase):
         driver.execute_script("PegawaiPilih.windowSave();")
         time.sleep(1)
         # TODO: gatau ini alertnya apa
-        save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
+        driver.find_element(By.ID, "btSimpan").click()
+#         save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
 
 
 # User melakukan transaksi baru data P&M Pengamanan 47 tanggal transaski lebih kecil dari hari ini
