@@ -51,10 +51,13 @@ class TC_PNBR(unittest.TestCase):
 
     #         cls.driver.quit()
 
-    def test_TC_PNBR_004(self):
+    def test_TC_PNBR_004(self, isedit=False):
         print("test_TC_PNBR_004")
         time.sleep(1)
-        save_get_alert(self.driver, "Pemakai belum dipilih!", "TC_PNBR_004")
+        alert_expected = (
+            "Nama Pemakai belum diisi!" if isedit else "Pemakai belum dipilih!"
+        )
+        save_get_alert(self.driver, alert_expected, "TC_PNBR_004")
 
     def test_TC_PNBR_005(self):
         driver = self.driver
@@ -167,6 +170,8 @@ class TC_PNBR(unittest.TestCase):
         time.sleep(1)
         # TODO: gatau ini alertnya apa
         driver.find_element(By.ID, "btSimpan").click()
+
+
 #         save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
 
 

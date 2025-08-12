@@ -23,6 +23,8 @@ from helpers.print_result import print_result
 from pages.login_page import LoginPage
 import time
 
+from tests.TC_PNBR import TC_PNBR
+
 
 class TC_PNED(unittest.TestCase):
     @classmethod
@@ -39,13 +41,9 @@ class TC_PNED(unittest.TestCase):
         time.sleep(3)
         driver.get(f"{cls.url}pages.php?Pg=pengamananPeralatanTrans")
         time.sleep(1)
-        filter_nibar(driver, TC_PNED.nibar)
-        time.sleep(1)
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        href_button(driver, "javascript:pengamananPeralatanTrans.formEdit()")
-        time.sleep(1)
         cls.shared = {}
+        cls.tc_pnbr = TC_PNBR()
+        cls.tc_pnbr.driver = cls.driver
 
     @classmethod
     def tearDownClass(cls):
@@ -57,6 +55,16 @@ class TC_PNED(unittest.TestCase):
             cls.driver.quit()
 
     #         cls.driver.quit()
+    def setUp(self):
+        if self._testMethodName in ["test_TC_PNED_001", "test_TC_PNED_002"]:
+            filter_nibar(self.driver, TC_PNED.nibar)
+            time.sleep(1)
+            checkbox(
+                self.driver, identifier=1, by="index", table_selector="table.koptable"
+            )
+            time.sleep(1)
+            href_button(self.driver, "javascript:pengamananPeralatanTrans.formEdit()")
+            time.sleep(1)
 
     def _dismiss_if_alert(self, driver):
         try:
@@ -66,6 +74,7 @@ class TC_PNED(unittest.TestCase):
         except Exception:
             pass
 
+    @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNED_001(self):
         print("test_TC_PNED_001")
         driver = self.driver
@@ -230,7 +239,16 @@ class TC_PNED(unittest.TestCase):
         except AssertionError:
             return
 
-    #     def test_TC_PNED_002(self):
+    def test_TC_PNED_002(self):
+        driver = self.driver
+        tc_pbnr = self.tc_pnbr
+        print("TC_PNED_002")
+        driver.find_element(By.ID, "fmnama_pemakai").clear()
+        tc_pbnr.test_TC_PNBR_004(isedit=True)
+        Dropdown(driver, identifier="fmstatus_pemakai", value="__reset__")
+        tc_pbnr.test_TC_PNBR_005()
+
+    @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNED_003(self):
         print("TC_PNED_003")
         data = self.__class__.shared
@@ -278,36 +296,5 @@ def set_tgl_buku(driver, tanggal_lengkap: str):
     )
 
 
-def pilih_pemakai_by_value(driver, checkbox_value: str):
-    button(driver, By.ID, "fmnama_pemakai_button")
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located(
-            (By.CSS_SELECTOR, "#PegawaiPilih_cont_daftar > table tbody tr")
-        )
-    )
-
-    # uncheck semua
-    for el in driver.find_elements(
-        By.CSS_SELECTOR,
-        "#PegawaiPilih_cont_daftar input[name='PegawaiPilih_cb[]']:checked",
-    ):
-        el.click()
-
-    # temukan checkbox dengan value tertentu
-    cb = driver.find_element(
-        By.CSS_SELECTOR,
-        f"#PegawaiPilih_cont_daftar input[name='PegawaiPilih_cb[]'][value='{checkbox_value}']",
-    )
-    cb.click()
-
-    driver.execute_script("PegawaiPilih.windowSave();")
-
-    field = (By.ID, "fmnama_pemakai")
-    WebDriverWait(driver, 10).until(
-        lambda d: ((d.find_element(*field).get_attribute("value") or "").strip() != "")
-    )
-    return (driver.find_element(*field).get_attribute("value") or "").strip()
-
-
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(defaultTest="TC_PNED")

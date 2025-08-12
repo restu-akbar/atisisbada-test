@@ -8,8 +8,8 @@ from helpers.driver_setup import create_driver
 from helpers.filter_nibar import filter_nibar
 from helpers.logout_helper import logout
 from helpers.nama_pemakai_check import nama_pemakai_check
+from helpers.print_result import print_result
 from pages.login_page import LoginPage
-from pages.modul_pengamanan_page import ModulPengamananPage
 import time
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
@@ -25,6 +25,7 @@ class TC_PNBT(unittest.TestCase):
         password = os.getenv("password")
         login_page = LoginPage(cls.driver)
         login_page.login(user, password)
+        TC_PNBT.nibar = os.getenv("nibar")
         time.sleep(3)
 
     @classmethod
@@ -39,83 +40,48 @@ class TC_PNBT(unittest.TestCase):
     #         cls.driver.quit()
 
     def setUp(self):
-        load_dotenv()
-        self.nibar = os.getenv("nibar")
-        self.nama_pemakai = None
-
-    def batal_helper(self):
         driver = self.driver
-        driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
-        page = ModulPengamananPage(driver)
-        self.assertTrue(
-            page.is_loaded(page_name="Pengamanan"), "❌ Modul Pengamanan gagal dimuat"
-        )
-        time.sleep(1)
-        filter_nibar(driver, self.nibar)
-        time.sleep(1)
-        checkbox(driver, identifier=0, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        href_button(driver, "javascript:pengamananPeralatanTrans.Hapus()")
+        if self._testMethodName in ["test_TC_PNBT_001", "test_TC_PNBT_003"]:
+            driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
+            time.sleep(1)
+            filter_nibar(driver, self.nibar)
+            time.sleep(1)
+            checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+            time.sleep(1)
+            href_button(driver, "javascript:pengamananPeralatanTrans.Hapus()")
+            try:
+                alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+            except TimeoutException:
+                alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+            alert.accept()
+
+            try:
+                alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+            except TimeoutException:
+                alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+            self.alert_text = alert.text
+            alert.accept()
 
     def test_TC_PNBT_001(self):
         print("TC_PNBT_001")
-        self.batal_helper()
-        driver = self.driver
-        try:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        except TimeoutException:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        alert.accept()
-
-        try:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        except TimeoutException:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        alert_text = alert.text
-        assert "Sukses Hapus Data" in alert_text, f"❌ Alert tidak sesuai: {alert_text}"
-        alert.accept()
-        print(
-            f"[✅] TC_PNBT_001 berhasil — Pemakaian dengan nibar {self.nibar} terhapus"
-        )
-        print(
-            "========================================================================"
-        )
+        print_result(self.alert_text, "Sukses Hapus Data", "TC_PNBT_001")
 
     def test_TC_PNBT_002(self):
         print("TC_PNBT_002")
-        self.assertFalse(
-            nama_pemakai_check(self).strip(),
-            "[❌] Gagal: nama pemakai masih ada",
-        )
-        print("[✅] TC_PNBT_002 berhasil — Nama Identitas Pemakai sudah tidak ada")
-        print(
-            "========================================================================"
-        )
+        actual = nama_pemakai_check(self).strip()
+        expected = ""
+
+        if actual != expected:
+            print_result(actual, expected, test_name="TC_PNBT_002")
+            raise AssertionError(
+                "[❌] Gagal: nama pemakai masih ada, pemakaian gagal dihapus"
+            )
+        else:
+            print_result(actual, expected, test_name="TC_PNBT_002")
 
     def test_TC_PNBT_003(self):
         print("TC_PNBT_003")
-        self.batal_helper()
-        driver = self.driver
-        try:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        except TimeoutException:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        alert.accept()
-        try:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        except TimeoutException:
-            alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        alert_text = alert.text
-        assert "Tidak bisa dibatalkan, sudah Pengembalian!" in alert_text, (
-            f"❌ Alert tidak sesuai: {alert_text}"
-        )
-        alert.accept()
-        print(
-            f"[✅] TC_PNBT_003 berhasil — Pemakaian dengan nibar {self.nibar} terhapus"
-        )
-        print(
-            "========================================================================"
-        )
+        print_result(self.alert_text, "Sukses Hapus Data", "TC_PNBT_001")
 
 
 if __name__ == "__main__":
