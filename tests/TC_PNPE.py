@@ -17,7 +17,6 @@ from components.dropdown import Dropdown
 from components.alert import alert_handle
 from helpers.print_result import print_result
 from pages.login_page import LoginPage
-from pages.modul_pengamanan_page import ModulPengamananPage
 from selenium.common.exceptions import TimeoutException, NoAlertPresentException
 
 from selenium.webdriver.common.alert import Alert

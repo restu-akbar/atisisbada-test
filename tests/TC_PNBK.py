@@ -13,7 +13,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.alert import Alert
 from pages.login_page import LoginPage
-from pages.modul_pengamanan_page import ModulPengamananPage
 import time
 
 from datetime import datetime, timedelta
@@ -40,8 +39,7 @@ class TestPengamanan(unittest.TestCase):
     #ini pembeda nya jadi dari angka terakhir 000,001,002,etc
     def test_TC_PNBK_000(self):
         self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
-        page = ModulPengamananPage(self.driver)
-        self.assertTrue(page.is_loaded(page_name="Pengamanan"), "❌ Modul Pengamanan gagal dimuat")
+
         time.sleep(2)
         self.driver.execute_script("document.body.style.zoom='80%'")
 

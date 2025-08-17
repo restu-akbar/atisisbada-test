@@ -33,12 +33,6 @@ class TC_PNBR(unittest.TestCase):
         driver = cls.driver
         time.sleep(3)
         driver.get(f"{cls.url}pages.php?Pg=pengamananPeralatan")
-        time.sleep(1)
-        filter_nibar(driver, TC_PNBR.nibar)
-        time.sleep(1)
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        href_button(driver, "javascript:pengamananPeralatan.formBaru()")
 
     @classmethod
     def tearDownClass(cls):
@@ -49,14 +43,19 @@ class TC_PNBR(unittest.TestCase):
         finally:
             cls.driver.quit()
 
-    #         cls.driver.quit()
 
-    def test_TC_PNBR_004(self, isedit=False):
+    def test_TC_PNBR_004(self, isedit=False): 
         print("test_TC_PNBR_004")
         time.sleep(1)
+        filter_nibar(self.driver, TC_PNBR.nibar)
+        time.sleep(1)
+        checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
+        time.sleep(1)
+        href_button(self.driver, "javascript:pengamananPeralatan.formBaru()")
         alert_expected = (
             "Nama Pemakai belum diisi!" if isedit else "Pemakai belum dipilih!"
         )
+        time.sleep(2)
         save_get_alert(self.driver, alert_expected, "TC_PNBR_004")
 
     def test_TC_PNBR_005(self):
@@ -141,9 +140,6 @@ class TC_PNBR(unittest.TestCase):
         today = datetime.now().strftime("%d-%m-%Y")
         driver.find_element(By.CLASS_NAME, "ui-datepicker-trigger").click()
         driver.find_element(By.ID, "fmtgl_bast").send_keys(today)
-        driver.find_element(By.CLASS_NAME, "ui-datepicker-trigger").click()
-        time.sleep(1)
-        driver.find_element(By.ID, "fmtgl_bast").send_keys(today)
         time.sleep(1)
         save_get_alert(driver, "Diinput Oleh belum diisi!", "TC_PNBR_011")
 
@@ -154,7 +150,7 @@ class TC_PNBR(unittest.TestCase):
         time.sleep(1)
         save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
 
-    def test_TC_PNBR_013(self):
+    def test_TC_PNBR_013(self): 
         driver = self.driver
         print("test_TC_PNBR_013")
         button(driver, By.ID, "fmdiinput_nama_button")
@@ -168,147 +164,146 @@ class TC_PNBR(unittest.TestCase):
         time.sleep(1)
         driver.execute_script("PegawaiPilih.windowSave();")
         time.sleep(1)
-        # TODO: gatau ini alertnya apa
-        driver.find_element(By.ID, "btSimpan").click()
+        
+        # Click second calendar icon 
+        calendar_icon = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "#fmtgl_buku_tgl + img.ui-datepicker-trigger"))
+        )
+        driver.execute_script("arguments[0].scrollIntoView(true);", calendar_icon)
+        calendar_icon.click()
+        time.sleep(3)
+        button_calender = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "#ui-datepicker-div > table > tbody > tr:nth-child(4) > td:nth-child(6) > a"))
+        )
+        button_calender.click()
+        time.sleep(5)
+
+        driver.find_element(By.ID, "btSimpan").click() # ini seharusnya tdak bisa dan memberikan alert
+        save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
 
 
-#         save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
+    # def test_TC_PNBR_014(self):
+    #     driver = self.driver
+    #     print("test_TC_PNBR_014")
+    #     next_day = (datetime.now() + timedelta(days=1)).strftime("%d-%m-%Y")
+    #     time.sleep(1)
+    #     driver.find_element(By.ID, "fmdiinput_nama_button").click()
+    #     time.sleep(1)
+    #     checkbox(
+    #         driver,
+    #         identifier=2,
+    #         by="index",
+    #         table_selector="#PegawaiPilih_cont_daftar > table",
+    #     )
+    #     time.sleep(1)
 
+    #     pilih_button = WebDriverWait(driver, 10).until(
+    #         EC.element_to_be_clickable(
+    #             (
+    #                 By.CSS_SELECTOR,
+    #                 "#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)",
+    #             )
+    #         )
+    #     )
+    #     driver.execute_script("PegawaiPilih.windowSave();", pilih_button)
 
-# User melakukan transaksi baru data P&M Pengamanan 47 tanggal transaski lebih kecil dari hari ini
-# Muncul alert tanggal transaksi tidak lebih kecil dari hari ini
+    #     time.sleep(1)
+    #     driver.find_element(By.ID, "btSimpan").click()
+    #     time.sleep(1)
 
-#     pass
+    #     alert = WebDriverWait(driver, 10).until(EC.alert_is_present())
+    #     alert_text = alert.text.strip()
+    #     print(f"ℹ️ Alert text: {alert_text}")
 
-#     def test_TC_PNBR_014(self):
-#         driver = self.driver
-#         print("test_TC_PNBR_014")
-#         next_day = (datetime.now() + timedelta(days=1)).strftime("%d-%m-%Y")
-#         time.sleep(1)
-#         driver.find_element(By.ID, "fmdiinput_nama_button").click()
-#         time.sleep(1)
-#         checkbox(
-#             driver,
-#             identifier=2,
-#             by="index",
-#             table_selector="#PegawaiPilih_cont_daftar > table",
-#         )
-#         time.sleep(1)
-#
-#         pilih_button = WebDriverWait(driver, 10).until(
-#             EC.element_to_be_clickable(
-#                 (
-#                     By.CSS_SELECTOR,
-#                     "#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)",
-#                 )
-#             )
-#         )
-#         driver.execute_script("PegawaiPilih.windowSave();", pilih_button)
-#
-#         time.sleep(1)
-#         driver.find_element(By.ID, "btSimpan").click()
-#         time.sleep(1)
-#
-# Handle alert
-#         alert = WebDriverWait(driver, 10).until(EC.alert_is_present())
-#         alert_text = alert.text.strip()
-#         print(f"ℹ️ Alert text: {alert_text}")
-#
-#         expected_text = f"Tanggal Transaksi Pengamanan tidak lebih kecil dari Tanggal BAST! ({next_day})"
-#         self.assertIn(
-#             expected_text, alert_text, f"Alert text mismatch, got: {alert_text}"
-#         )
-#
-#         alert.accept()
+    #     expected_text = f"Tanggal Transaksi Pengamanan tidak lebih kecil dari Tanggal BAST! ({next_day})"
+    #     self.assertIn(
+    #         expected_text, alert_text, f"Alert text mismatch, got: {alert_text}"
+    #     )
 
-# Skipped karena icon date image nya tidak dapat di tekan (skill issue sih kayak nya)
-# def test_TC_PNBR_015(self):
-#     driver = self.driver
-#     print("test_TC_PNBR_015")
-# User melakukan transaksi baru data P&M Pengamanan 47 tanggal transaski lebih kecil dari tgltransaksi terakhir
-# Muncul alert tanggal transaksi tidak lebih kecil dari tanggal transaksi terakhir
-#     pass
+    #     alert.accept()
 
-#     def test_TC_PNBR_016(self):
-#         driver = self.driver
-#         day = (datetime.now() - timedelta(days=3)).strftime("%d-%m-%Y")
-#         print("test_TC_PNBR_016")
-#
-#         time.sleep(1)
-#         driver.find_element(By.CLASS_NAME, "ui-datepicker-trigger").click()
-#         time.sleep(1)
-#         driver.find_element(By.ID, "fmtgl_bast").clear()
-#         driver.find_element(By.ID, "fmtgl_bast").send_keys(day)
-#
-#         time.sleep(1)
-#         driver.find_element(By.ID, "btSimpan").click()
-#         time.sleep(1)
-#         driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
-#         time.sleep(1)
-#         driver.execute_script("document.body.style.zoom='70%'")
-#         time.sleep(1)
-#         pass
-#
-#     def test_TC_PNBR_017(self):
-#         driver = self.driver
-#         print("test_TC_PNBR_017")
-#         driver.get(f"{self.url}index.php?Pg=05&SPg=05&jns=tetap")
-#         time.sleep(1)
-#         checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-#         driver.execute_script("document.body.style.zoom='80%'")
-#         time.sleep(1)
-#         pass
+    # def test_TC_PNBR_015(self):
+    #     driver = self.driver
+    #     print("test_TC_PNBR_015")
 
-#     def test_TC_PNBR_018(self):
-#         driver = self.driver
-#         print("test_TC_PNBR_018")
-#         self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatan")
-#         time.sleep(1)
-#         filter_nibar(driver, self.nibar)
-#         driver.find_element(By.ID, "pengamananPeralatan_cb0").click()
-#         driver.find_element(By.ID, "fmMerk").send_keys("TOYOTA INNOVA E")
-#         time.sleep(1)
-#         driver.find_element(By.ID, "btTampil").click()
-#         time.sleep(1)
-#
-#         checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-#         driver.find_element(By.CLASS_NAME, "toolbar").click()
-#
-#         time.sleep(1)
-#
-#         alert = Alert(driver)
-#         alert_text = alert.text
-#         print(f"ℹ️ Alert muncul: {alert_text}")
-#         self.assertEqual(
-#             alert_text,
-#             "Belum dilakukan pengembalian barang untuk pengguna/pemakai sebelumnya!",
-#             f"Teks alert tidak sesuai, dapat: {alert_text}",
-#         )
-#         alert.accept()
-#         time.sleep(1)
-#
-#         pass
+    # def test_TC_PNBR_016(self):
+    #     driver = self.driver
+    #     day = (datetime.now() - timedelta(days=3)).strftime("%d-%m-%Y")
+    #     print("test_TC_PNBR_016")
 
-#     def test_ZZZ_998(self):
-#         self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
-#         self.driver.execute_script("document.body.style.zoom='80%'")
-#         time.sleep(1)
-#         self.driver.find_element(By.ID, "pengamananPeralatanTrans_cb0").click()
-#         time.sleep(1)
-#         self.driver.find_element(By.PARTIAL_LINK_TEXT, "Batal").click()
-#         time.sleep(1)
-#
-#         alert = Alert(self.driver)
-#         alert_text = alert.text
-#         print(f"ℹ️ Alert muncul: {alert_text}")
-#         alert.accept()
-#         time.sleep(1)
-#
-#         alert = Alert(self.driver)
-#         alert_text = alert.text
-#         print(f"ℹ️ Alert muncul: {alert_text}")
-#         alert.accept()
-#         time.sleep(1)
+    #     time.sleep(1)
+    #     driver.find_element(By.CLASS_NAME, "ui-datepicker-trigger").click()
+    #     time.sleep(1)
+    #     driver.find_element(By.ID, "fmtgl_bast").clear()
+    #     driver.find_element(By.ID, "fmtgl_bast").send_keys(day)
+
+    #     time.sleep(1)
+    #     driver.find_element(By.ID, "btSimpan").click()
+    #     time.sleep(1)
+    #     driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
+    #     time.sleep(1)
+    #     driver.execute_script("document.body.style.zoom='70%'")
+    #     time.sleep(1)
+    #     pass
+
+    # def test_TC_PNBR_017(self):
+    #     driver = self.driver
+    #     print("test_TC_PNBR_017")
+    #     driver.get(f"{self.url}index.php?Pg=05&SPg=05&jns=tetap")
+    #     time.sleep(1)
+    #     checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+    #     driver.execute_script("document.body.style.zoom='80%'")
+    #     time.sleep(1)
+    #     pass
+
+    # def test_TC_PNBR_018(self):
+    #     driver = self.driver
+    #     print("test_TC_PNBR_018")
+    #     self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatan")
+    #     time.sleep(1)
+    #     filter_nibar(driver, self.nibar)
+    #     driver.find_element(By.ID, "pengamananPeralatan_cb0").click()
+    #     driver.find_element(By.ID, "fmMerk").send_keys("TOYOTA INNOVA E")
+    #     time.sleep(1)
+    #     driver.find_element(By.ID, "btTampil").click()
+    #     time.sleep(1)
+
+    #     checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+    #     driver.find_element(By.CLASS_NAME, "toolbar").click()
+
+    #     time.sleep(1)
+
+    #     alert = Alert(driver)
+    #     alert_text = alert.text
+    #     print(f"ℹ️ Alert muncul: {alert_text}")
+    #     self.assertEqual(
+    #         alert_text,
+    #         "Belum dilakukan pengembalian barang untuk pengguna/pemakai sebelumnya!",
+    #         f"Teks alert tidak sesuai, dapat: {alert_text}",
+    #     )
+    #     alert.accept()
+    #     time.sleep(1)
+
+    def test_ZZZ_998(self):
+        self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
+        self.driver.execute_script("document.body.style.zoom='80%'")
+        time.sleep(1)
+        self.driver.find_element(By.ID, "pengamananPeralatanTrans_cb0").click()
+        time.sleep(1)
+        self.driver.find_element(By.PARTIAL_LINK_TEXT, "Batal").click()
+        time.sleep(1)
+
+        alert = Alert(self.driver)
+        alert_text = alert.text
+        print(f"ℹ️ Alert muncul: {alert_text}")
+        alert.accept()
+        time.sleep(1)
+
+        alert = Alert(self.driver)
+        alert_text = alert.text
+        print(f"ℹ️ Alert muncul: {alert_text}")
+        alert.accept()
+        time.sleep(1)
 
 
 if __name__ == "__main__":
