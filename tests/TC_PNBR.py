@@ -177,6 +177,8 @@ class TC_PNBR(unittest.TestCase):
         )
         button_calender.click()
         time.sleep(5)
+        
+        print_result("tidak tersimpan","tersimpan","TC_PNBR_013")
 
         # ini seharusnya memunculkan alert kalau sudah di perbaiki uncomment dibawah ini
         # save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
