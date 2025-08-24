@@ -8,10 +8,16 @@ from components.button import button
 from components.form_input import form_input
 
 
-def filter_nibar(driver, text, timeout=10):
-    wait = WebDriverWait(driver, timeout)
-    wait.until(EC.visibility_of_element_located((By.ID, "fmFiltNibar")))
-    time.sleep(1)
-    form_input(driver, By.ID, "fmFiltNibar", text)
+def filter_pengamanan(driver, text: str, filter="fmFiltNibar"):
+    form_input(driver, By.ID, filter, text)
     time.sleep(1)
     button(driver, By.ID, "btTampil")
+
+
+def filter_nibar_pembukuan(driver, text, timeout=10):
+    wait = WebDriverWait(driver, timeout)
+    wait.until(EC.visibility_of_element_located((By.ID, "nodata")))
+    time.sleep(1)
+    form_input(driver, By.ID, "nodata", text)
+    time.sleep(1)
+    button(driver, By.XPATH, '//input[@type="button" and @value="Tampilkan"]')

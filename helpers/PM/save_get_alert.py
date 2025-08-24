@@ -2,14 +2,19 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from components.button import button
 from helpers.print_result import print_result
 
 
 def save_get_alert(
-    driver, expected=None, test_name="TEST_CASE", accept=True, timeout=5
+    driver,
+    save_button="btSimpan",
+    expected=None,
+    test_name="TEST_CASE",
+    accept=True,
+    timeout=5,
 ):
-    driver.find_element(By.ID, "btSimpan").click()
-
+    button(driver, By.ID, save_button)
     try:
         alert = WebDriverWait(driver, timeout).until(EC.alert_is_present())
     except TimeoutException:
