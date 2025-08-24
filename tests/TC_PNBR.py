@@ -11,6 +11,7 @@ from helpers.PM.save_get_alert import save_get_alert
 from helpers.print_result import print_result
 from components.checkbox import checkbox
 from components.dropdown import Dropdown
+from helpers.set_tanggal_buku import set_tgl_buku
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -165,23 +166,12 @@ class TC_PNBR(unittest.TestCase):
         driver.execute_script("PegawaiPilih.windowSave();")
         time.sleep(1)
         
-        # Click second calendar icon 
-        calendar_icon = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#fmtgl_buku_tgl + img.ui-datepicker-trigger"))
-        )
-        driver.execute_script("arguments[0].scrollIntoView(true);", calendar_icon)
-        calendar_icon.click()
-        time.sleep(3)
-        button_calender = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#ui-datepicker-div > table > tbody > tr:nth-child(4) > td:nth-child(6) > a"))
-        )
-        button_calender.click()
-        time.sleep(5)
+        dt = datetime.now()
+        changed_dt = dt.replace(month=12, day=30).strftime("%d-%m-%Y")
         
-        print_result("tidak tersimpan","tersimpan","TC_PNBR_013")
-
-        # ini seharusnya memunculkan alert kalau sudah di perbaiki uncomment dibawah ini
-        # save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
+        set_tgl_buku(self.driver, changed_dt)
+        time.sleep(1)
+        save_get_alert(driver, "tanggal transaksi tidak lebih besar dari hari ini", "TC_PNBR_012")
 
 
     def test_TC_PNBR_014(self):
@@ -195,27 +185,11 @@ class TC_PNBR(unittest.TestCase):
         driver = self.driver
         print("test_TC_PNBR_015")
         
-        # Click second calendar icon 
-        calendar_icon = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#fmtgl_buku_tgl + img.ui-datepicker-trigger"))
-        )
-        driver.execute_script("arguments[0].scrollIntoView(true);", calendar_icon)
-        calendar_icon.click()
-        time.sleep(3)
-        button_calender = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "ui-datepicker-month"))
-        )
-        button_calender.click()
-        time.sleep(1)
-        button_calender2 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#ui-datepicker-div > div > div > select.ui-datepicker-month > option:nth-child(5)"))
-        )
-        button_calender2.click()
-        time.sleep(1)
-        button_calender3 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#ui-datepicker-div > table > tbody > tr:nth-child(1) > td:nth-child(5) > a"))
-        )
-        button_calender3.click()
+        dt = datetime.now()
+        changed_dt = dt.replace(month=5, day=1).strftime("%d-%m-%Y")
+        
+        set_tgl_buku(self.driver, changed_dt)
+        
         time.sleep(2)
         save_get_alert(driver, "Tanggal Transaksi tidak boleh lebih kecil dari tanggal pengembalian terakhir! (02-05-2025)", "TC_PNBR_015")
 
@@ -224,20 +198,13 @@ class TC_PNBR(unittest.TestCase):
         driver = self.driver
         print("test_TC_PNBR_016")
 
-        # Click second calendar icon 
-        calendar_icon = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#fmtgl_buku_tgl + img.ui-datepicker-trigger"))
-        )
-        driver.execute_script("arguments[0].scrollIntoView(true);", calendar_icon)
-        calendar_icon.click()
-        time.sleep(1)
-        button_calender3 = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#ui-datepicker-div > table > tbody > tr:nth-child(1) > td:nth-child(7) > a"))
-        )
-        button_calender3.click()
-        time.sleep(1)
+        dt = datetime.now()
+        changed_dt = dt.replace(month=5, day=3).strftime("%d-%m-%Y")
+        set_tgl_buku(self.driver, changed_dt)
+        
         driver.find_element(By.ID, "btSimpan").click()
-        time.sleep(6)
+        time.sleep(1)
+
         driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
         time.sleep(1)
         driver.execute_script("document.body.style.zoom='70%'")
@@ -253,7 +220,7 @@ class TC_PNBR(unittest.TestCase):
         checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         driver.execute_script("document.body.style.zoom='80%'")
         #TODO: Assert ubah atau buat komponen baru untuk mengecek data nya sama atau tidak
-        print_result("Data Sesuai","Data Sesuai", test_name="TC_PNBR_016")
+        print_result("Data Sesuai","Data Sesuai", test_name="TC_PNBR_017")
         time.sleep(1)
         pass
 
@@ -273,6 +240,7 @@ class TC_PNBR(unittest.TestCase):
 
         time.sleep(1)
 
+        #tidak di pakai save_get _alert karena di fungsi itu mencari btnsimpan terlebih dahulu
         expected = "Belum dilakukan pengembalian barang untuk pengguna/pemakai sebelumnya!"    
         alert = Alert(driver)
         alert_text = alert.text
@@ -288,6 +256,7 @@ class TC_PNBR(unittest.TestCase):
         time.sleep(1)
 
     def test_ZZZ_998(self):
+        print("Clean Up")
         self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
         self.driver.execute_script("document.body.style.zoom='80%'")
         time.sleep(1)
