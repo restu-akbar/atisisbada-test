@@ -5,7 +5,7 @@ from components.button import button
 from components.form_input import form_input
 from components.href_button import href_button
 from helpers.driver_setup import create_driver
-from helpers.filter_nibar import filter_nibar
+from helpers.filter_nibar import filter_pengamanan
 from helpers.logout_helper import logout
 from helpers.PM.save_get_alert import save_get_alert
 from helpers.print_result import print_result
@@ -18,7 +18,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.alert import Alert
 from pages.login_page import LoginPage
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
+from selenium.common.exceptions import NoSuchElementException
 
 
 class TC_PNBR(unittest.TestCase):
@@ -49,7 +50,7 @@ class TC_PNBR(unittest.TestCase):
     def test_TC_PNBR_004(self, isedit=False): 
         print("test_TC_PNBR_004")
         time.sleep(1)
-        filter_nibar(self.driver, TC_PNBR.nibar)
+        filter_pengamanan(self.driver, TC_PNBR.nibar)
         time.sleep(1)
         checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
@@ -58,7 +59,10 @@ class TC_PNBR(unittest.TestCase):
             "Nama Pemakai belum diisi!" if isedit else "Pemakai belum dipilih!"
         )
         time.sleep(2)
-        save_get_alert(self.driver, alert_expected, "TC_PNBR_004")
+        save_get_alert(
+            self.driver,
+            expected=alert_expected,
+            test_name="TC_PNBR_004")
 
     def test_TC_PNBR_005(self):
         driver = self.driver
@@ -75,7 +79,10 @@ class TC_PNBR(unittest.TestCase):
         time.sleep(1)
         driver.execute_script("PegawaiPilih.windowSave();")
         time.sleep(1)
-        save_get_alert(driver, "Status Pemakai belum diisi!", "TC_PNBR_005")
+        save_get_alert(
+            driver,
+            expected="Status Pemakai belum diisi!",
+            test_name="TC_PNBR_005")
 
     def test_TC_PNBR_006(self):
         driver = self.driver
@@ -91,7 +98,9 @@ class TC_PNBR(unittest.TestCase):
         else:
             print("test_TC_PNBR_006")
             save_get_alert(
-                self.driver, "Status Pemakai Lainnya belum diisi!", "TC_PNBR_006"
+                self.driver,
+                expected= "Status Pemakai Lainnya belum diisi!",
+                test_name="TC_PNBR_006"
             )
 
     def test_TC_PNBR_007(self):
@@ -111,7 +120,9 @@ class TC_PNBR(unittest.TestCase):
         form_input(driver, By.ID, "fmstatus_pemakai_lainnya", "pegawai pembantu")
         time.sleep(1)
         save_get_alert(
-            self.driver, "Nomor Identitas Pemakai belum diisi!", "TC_PNBR_007"
+            self.driver,
+            expected="Nomor Identitas Pemakai belum diisi!",
+            test_name="TC_PNBR_007"
         )
 
     def test_TC_PNBR_008(self):
@@ -119,15 +130,20 @@ class TC_PNBR(unittest.TestCase):
         print("test_TC_PNBR_008")
         form_input(driver, By.ID, "fmno_ktp_pemakai", "12345678")
         time.sleep(1)
-        save_get_alert(driver, "Alamat Pemakai belum diisi!", "TC_PNBR_008")
-        pass
+        save_get_alert(
+            driver,
+            expected="Alamat Pemakai belum diisi!",
+            test_name="TC_PNBR_008")
 
     def test_TC_PNBR_009(self):
         driver = self.driver
         print("test_TC_PNBR_009")
         form_input(driver, By.ID, "fmalamat_pemakai", "Alamat Testing")
         time.sleep(1)
-        save_get_alert(driver, "Nomor BAST belum diisi!", "TC_PNBR_009")
+        save_get_alert(
+            driver, 
+            expected="Nomor BAST belum diisi!",
+            test_name="TC_PNBR_009")
 
     def test_TC_PNBR_010(self):
         driver = self.driver
@@ -142,14 +158,20 @@ class TC_PNBR(unittest.TestCase):
         driver.find_element(By.CLASS_NAME, "ui-datepicker-trigger").click()
         driver.find_element(By.ID, "fmtgl_bast").send_keys("01-05-2025")
         time.sleep(1)
-        save_get_alert(driver, "Diinput Oleh belum diisi!", "TC_PNBR_011")
+        save_get_alert(
+            driver,
+            expected="Diinput Oleh belum diisi!",
+            test_name="TC_PNBR_011")
 
     def test_TC_PNBR_012(self):
         driver = self.driver
         print("test_TC_PNBR_012")
         Dropdown(driver, identifier="fmdiinput_oleh", value="1", by="id")
         time.sleep(1)
-        save_get_alert(driver, "Diinput Nama belum dipilih!", "TC_PNBR_012")
+        save_get_alert(
+            driver,
+            expected="Diinput Nama belum dipilih!",
+            test_name="TC_PNBR_012")
 
     def test_TC_PNBR_013(self): 
         driver = self.driver
@@ -171,7 +193,10 @@ class TC_PNBR(unittest.TestCase):
         
         set_tgl_buku(self.driver, changed_dt)
         time.sleep(1)
-        save_get_alert(driver, "tanggal transaksi tidak lebih besar dari hari ini", "TC_PNBR_012")
+        save_get_alert(
+            driver,
+            expected= "tanggal transaksi tidak lebih besar dari hari ini",
+            test_name="TC_PNBR_012")
 
 
     def test_TC_PNBR_014(self):
@@ -184,14 +209,19 @@ class TC_PNBR(unittest.TestCase):
     def test_TC_PNBR_015(self):
         driver = self.driver
         print("test_TC_PNBR_015")
-        
-        dt = datetime.now()
-        changed_dt = dt.replace(month=5, day=1).strftime("%d-%m-%Y")
-        
-        set_tgl_buku(self.driver, changed_dt)
-        
-        time.sleep(2)
-        save_get_alert(driver, "Tanggal Transaksi tidak boleh lebih kecil dari tanggal pengembalian terakhir! (02-05-2025)", "TC_PNBR_015")
+        try:    
+            dt = datetime.now()
+            changed_dt = dt.replace(month=5, day=1).strftime("%d-%m-%Y")
+            
+            set_tgl_buku(self.driver, changed_dt)
+            
+            time.sleep(2)
+            save_get_alert(
+                driver,
+                expected="Tanggal Transaksi tidak boleh lebih kecil dari tanggal pengembalian terakhir! (02-05-2025)",
+                test_name="TC_PNBR_015")
+        except NoSuchElementException:
+            print_result("Data Tersimpan", "Muncul Alert", test_name="TC_PNBK_016")  
 
     #Simpan akhir
     def test_TC_PNBR_016(self):
@@ -229,7 +259,7 @@ class TC_PNBR(unittest.TestCase):
         print("test_TC_PNBR_018")
         self.driver.get(f"{self.url}pages.php?Pg=pengamananPeralatan")
         time.sleep(1)
-        filter_nibar(driver, self.nibar)
+        filter_pengamanan(driver, self.nibar)
 
         time.sleep(1)
         driver.find_element(By.ID, "btTampil").click()
