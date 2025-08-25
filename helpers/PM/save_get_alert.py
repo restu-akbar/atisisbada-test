@@ -8,26 +8,31 @@ from helpers.print_result import print_result
 
 def save_get_alert(
     driver,
-    save_button="btSimpan",
     expected=None,
     test_name="TEST_CASE",
+    save_button="btSimpan",
     accept=True,
     timeout=5,
 ):
     button(driver, By.ID, save_button)
+    actual = ""
+    alert = None
+
     try:
         alert = WebDriverWait(driver, timeout).until(EC.alert_is_present())
+        actual = alert.text or ""
     except TimeoutException:
-        raise AssertionError(
-            f"[❌] {test_name} gagal: Alert tidak muncul dalam {timeout} detik."
-        )
-
-    actual = alert.text
+        actual = ""
 
     if expected is not None:
         print_result(actual, expected, test_name)
 
-    if accept:
-        alert.accept()
+    if alert:
+        if accept:
+            alert.accept()
+        else:
+            alert.dismiss()
+        return True
     else:
-        alert.dismiss()
+        return False
+

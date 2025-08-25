@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import unittest
 import os
 import re
 from dotenv import load_dotenv
 from selenium.common.exceptions import NoAlertPresentException
-from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
@@ -14,12 +13,13 @@ from components.form_input import form_input
 from components.button import button
 from components.checkbox import checkbox
 from components.href_button import href_button
-from helpers.PM.save_get_alert import save_get_alert
 from helpers.driver_setup import create_driver
-from helpers.filter_nibar import filter_nibar
+from helpers.filter_nibar import filter_pengamanan
 from helpers.logout_helper import logout
 from helpers.nama_pemakai_check import nama_pemakai_check
 from helpers.print_result import print_result
+from helpers.set_tanggal_buku import set_tgl_buku
+from helpers.clear_readonly_input import clear_readonly_input
 from pages.login_page import LoginPage
 import time
 
@@ -47,17 +47,18 @@ class TC_PNED(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        try:
-            logout(cls.driver)
-        except Exception as e:
-            print(f"⚠️ Logout gagal: {e}")
-        finally:
-            cls.driver.quit()
+        #         try:
+        #             logout(cls.driver)
+        #         except Exception as e:
+        #             print(f"⚠️ Logout gagal: {e}")
+        #         finally:
+        #             cls.driver.quit()
+        #
+        cls.driver.quit()
 
-    #         cls.driver.quit()
     def setUp(self):
         if self._testMethodName in ["test_TC_PNED_001", "test_TC_PNED_002"]:
-            filter_nibar(self.driver, TC_PNED.nibar)
+            filter_pengamanan(self.driver, TC_PNED.nibar or "")
             time.sleep(1)
             checkbox(
                 self.driver, identifier=1, by="index", table_selector="table.koptable"
@@ -74,7 +75,7 @@ class TC_PNED(unittest.TestCase):
         except Exception:
             pass
 
-    @unittest.skip("Belum mau dijalankan sekarang")
+    #     @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNED_001(self):
         print("test_TC_PNED_001")
         driver = self.driver
@@ -243,57 +244,55 @@ class TC_PNED(unittest.TestCase):
         driver = self.driver
         tc_pbnr = self.tc_pnbr
         print("TC_PNED_002")
-        driver.find_element(By.ID, "fmnama_pemakai").clear()
-        tc_pbnr.test_TC_PNBR_004(isedit=True)
-        Dropdown(driver, identifier="fmstatus_pemakai", value="__reset__")
-        tc_pbnr.test_TC_PNBR_005()
 
-    @unittest.skip("Belum mau dijalankan sekarang")
+        def recover_if_failed(actual):
+            if not actual:
+                checkbox(
+                    driver, identifier=1, by="index", table_selector="table.koptable"
+                )
+                time.sleep(1)
+                href_button(driver, "javascript:pengamananPeralatanTrans.formEdit()")
+                time.sleep(1)
+            return actual
+
+        clear_readonly_input(driver, By.ID, "fmnama_pemakai")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_004(True))
+
+        Dropdown(driver, identifier="fmstatus_pemakai", value="__reset__")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_005(True))
+
+        clear_readonly_input(driver, By.ID, "fmstatus_pemakai_lainnya")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_006(True))
+
+        clear_readonly_input(driver, By.ID, "fmno_ktp_pemakai")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_007(True))
+
+        clear_readonly_input(driver, By.ID, "fmalamat_pemakai")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_008(True))
+
+        clear_readonly_input(driver, By.ID, "fmno_bast")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_009(True))
+
+        clear_readonly_input(driver, By.ID, "fmtgl_bast")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_010(True))
+
+        Dropdown(driver, identifier="fmdiinput_oleh", value="__reset__")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_011(True))
+
+        clear_readonly_input(driver, By.ID, "fmdiinput_nama")
+        recover_if_failed(tc_pbnr.test_TC_PNBR_012(True))
+
+        recover_if_failed(tc_pbnr.test_TC_PNBR_013(True))
+
+        recover_if_failed(tc_pbnr.test_TC_PNBR_015(True))
+
+    #     @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNED_003(self):
         print("TC_PNED_003")
         data = self.__class__.shared
         actual = nama_pemakai_check(self)
         expected = data.get("nama_pemakai", "")
         print_result(actual, expected, test_name="TC_PNED_003")
-
-
-def set_tgl_buku(driver, tanggal_lengkap: str):
-    dd, mm, yyyy = tanggal_lengkap.split("-")
-    ddmm = f"{dd}-{mm}"
-
-    tgl_el = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "fmtgl_buku_tgl"))
-    )
-    thn_el = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "fmtgl_buku_thn"))
-    )
-
-    try:
-        driver.find_element(
-            By.XPATH,
-            "//input[@id='fmtgl_buku_tgl']/following-sibling::img[contains(@class,'ui-datepicker-trigger')]",
-        ).click()
-    except Exception:
-        pass
-
-    driver.execute_script(
-        """
-        const tgl = arguments[0], thn = arguments[1], ddmm = arguments[2], yyyy = arguments[3];
-        try { tgl.removeAttribute('readonly'); } catch(e) {}
-        try { thn.removeAttribute('readonly'); } catch(e) {}
-        tgl.value = ddmm;
-        thn.value = yyyy;
-    
-        ['input','change','blur'].forEach(evt => {
-            tgl.dispatchEvent(new Event(evt, { bubbles: true }));
-            thn.dispatchEvent(new Event(evt, { bubbles: true }));
-        });
-    """,
-        tgl_el,
-        thn_el,
-        ddmm,
-        yyyy,
-    )
 
 
 if __name__ == "__main__":

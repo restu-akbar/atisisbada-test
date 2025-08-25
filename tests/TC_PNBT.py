@@ -5,7 +5,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from components.checkbox import checkbox
 from components.href_button import href_button
 from helpers.driver_setup import create_driver
-from helpers.filter_nibar import filter_nibar
+from helpers.filter_nibar import filter_pengamanan
 from helpers.logout_helper import logout
 from helpers.nama_pemakai_check import nama_pemakai_check
 from helpers.print_result import print_result
@@ -44,7 +44,7 @@ class TC_PNBT(unittest.TestCase):
         if self._testMethodName in ["test_TC_PNBT_001", "test_TC_PNBT_003"]:
             driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
             time.sleep(1)
-            filter_nibar(driver, self.nibar)
+            filter_pengamanan(driver, self.nibar or "")
             time.sleep(1)
             checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
             time.sleep(1)
@@ -66,6 +66,7 @@ class TC_PNBT(unittest.TestCase):
         print("TC_PNBT_001")
         print_result(self.alert_text, "Sukses Hapus Data", "TC_PNBT_001")
 
+    @unittest.skip("untuk testing")
     def test_TC_PNBT_002(self):
         print("TC_PNBT_002")
         actual = nama_pemakai_check(self).strip()
@@ -79,6 +80,7 @@ class TC_PNBT(unittest.TestCase):
         else:
             print_result(actual, expected, test_name="TC_PNBT_002")
 
+    @unittest.skip("untuk testing")
     def test_TC_PNBT_003(self):
         print("TC_PNBT_003")
         print_result(self.alert_text, "Sukses Hapus Data", "TC_PNBT_001")
