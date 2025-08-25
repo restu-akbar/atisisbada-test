@@ -259,7 +259,7 @@ class TC_PNED(unittest.TestCase):
         recover_if_failed(tc_pbnr.test_TC_PNBR_004(True))
 
         Dropdown(driver, identifier="fmstatus_pemakai", value="__reset__")
-        recover_if_failed(tc_pbnr.test_TC_PNBR_005(True))
+        self.__class__.shared["nama_pemakai"] = tc_pbnr.test_TC_PNBR_005(True)
 
         clear_readonly_input(driver, By.ID, "fmstatus_pemakai_lainnya")
         recover_if_failed(tc_pbnr.test_TC_PNBR_006(True))

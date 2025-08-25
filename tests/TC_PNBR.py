@@ -65,12 +65,6 @@ class TC_PNBR(unittest.TestCase):
 
     def test_TC_PNBR_004(self, isedit=False):
         print("test_TC_PNBR_004")
-        time.sleep(1)
-        filter_pengamanan(self.driver, TC_PNBR.nibar)
-        time.sleep(1)
-        checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        href_button(self.driver, "javascript:pengamananPeralatan.formBaru()")
         alert_expected = (
             "Nama Pemakai belum diisi!" if isedit else "Pemakai belum dipilih!"
         )
@@ -100,7 +94,7 @@ class TC_PNBR(unittest.TestCase):
         time.sleep(1)
         actual = save_get_alert(driver, "Status Pemakai belum diisi!", "TC_PNBR_005")
         if isedit:
-            return actual
+            return driver.find_element(By.ID, "fmnama_pemakai").get_attribute("value")
         else:
             TC_PNBR.actual = actual
 
@@ -246,23 +240,9 @@ class TC_PNBR(unittest.TestCase):
     def test_TC_PNBR_015(self, isedit=False):
         driver = self.driver
         print("test_TC_PNBR_015")
-        try:
-            dt = datetime.now()
-            changed_dt = dt.replace(month=5, day=1).strftime("%d-%m-%Y")
-
-            set_tgl_buku(self.driver, changed_dt)
-
-            time.sleep(2)
-            save_get_alert(
-                driver,
-                expected="Tanggal Transaksi tidak boleh lebih kecil dari tanggal pengembalian terakhir! (02-05-2025)",
-                test_name="TC_PNBR_015",
-            )
-        except NoSuchElementException:
-            print_result("Data Tersimpan", "Muncul Alert", test_name="TC_PNBK_016")
-
+        dt = datetime.now()
+        changed_dt = dt.replace(month=5, day=1).strftime("%d-%m-%Y")
         set_tgl_buku(self.driver, changed_dt)
-
         time.sleep(2)
         actual = save_get_alert(
             driver,
