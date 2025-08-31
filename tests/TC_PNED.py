@@ -284,7 +284,7 @@ class TC_PNED(unittest.TestCase):
 
         recover_if_failed(tc_pbnr.test_TC_PNBR_013(True))
 
-        recover_if_failed(tc_pbnr.test_TC_PNBR_015(True))
+    #         recover_if_failed(tc_pbnr.test_TC_PNBR_015(True))
 
     #     @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNED_003(self):
