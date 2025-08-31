@@ -38,7 +38,7 @@ class TC_PNBR(unittest.TestCase):
         time.sleep(1)
         filter_pengamanan(cls.driver, TC_PNBR.nibar or "")
         time.sleep(1)
-        checkbox(cls.driver, identifier=1, by="index", table_selector="table.koptable")
+        checkbox(cls.driver, identifier=-1, by="index", table_selector="table.koptable")
         time.sleep(1)
         href_button(cls.driver, "javascript:pengamananPeralatan.formBaru()")
         time.sleep(1)
@@ -57,7 +57,7 @@ class TC_PNBR(unittest.TestCase):
             filter_pengamanan(self.driver, TC_PNBR.nibar or "")
             time.sleep(1)
             checkbox(
-                self.driver, identifier=1, by="index", table_selector="table.koptable"
+                self.driver, identifier=-1, by="index", table_selector="table.koptable"
             )
             time.sleep(1)
             href_button(self.driver, "javascript:pengamananPeralatan.formBaru()")
@@ -280,7 +280,7 @@ class TC_PNBR(unittest.TestCase):
         print("test_TC_PNBR_017")
         driver.get(f"{self.url}index.php?Pg=05&SPg=05&jns=tetap")
         time.sleep(1)
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+        checkbox(driver, identifier=-1, by="index", table_selector="table.koptable")
         driver.execute_script("document.body.style.zoom='80%'")
         # TODO: Assert ubah atau buat komponen baru untuk mengecek data nya sama atau tidak
         print_result("Data Sesuai", "Data Sesuai", test_name="TC_PNBR_017")
@@ -298,7 +298,7 @@ class TC_PNBR(unittest.TestCase):
         driver.find_element(By.ID, "btTampil").click()
         time.sleep(1)
 
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+        checkbox(driver, identifier=-1, by="index", table_selector="table.koptable")
         driver.find_element(By.CLASS_NAME, "toolbar").click()
 
         time.sleep(1)

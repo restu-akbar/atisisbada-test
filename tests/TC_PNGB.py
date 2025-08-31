@@ -31,7 +31,8 @@ class TC_PNGB(unittest.TestCase):
         password = os.getenv("password")
         login_page = LoginPage(cls.driver)
         login_page.login(user, password)
-        TC_PNGB.nibar = os.getenv("nibar")
+        TC_PNGB.nibar = os.getenv("nibar") 
+        TC_PNGB.actual = ""
         driver = cls.driver
         time.sleep(3)
         driver.get(f"{cls.url}pages.php?Pg=pengamananGedung")
@@ -46,10 +47,10 @@ class TC_PNGB(unittest.TestCase):
             cls.driver.quit()
 
 
-    def test_TC_PNGB_004(self, isedit=False): 
+    def test_TC_PNGB_004(self, isedit=False):
         print("test_TC_PNGB_004")
         time.sleep(1)
-        filter_pengamanan(self.driver, TC_PNGB.nibar)
+        filter_pengamanan(self.driver, TC_PNGB.nibar or "")
         time.sleep(1)
         checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
@@ -58,13 +59,17 @@ class TC_PNGB(unittest.TestCase):
             "Penghuni belum dipilih!" if isedit else "Penghuni belum dipilih!"
         )
         time.sleep(2)
-        save_get_alert(
+        actual = save_get_alert(
             self.driver,
             expected=alert_expected,
             test_name="TC_PNGB_004"
-            )
+        )
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
 
-    def test_TC_PNGB_005(self):
+    def test_TC_PNGB_005(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_005")
         time.sleep(1)
@@ -79,12 +84,16 @@ class TC_PNGB(unittest.TestCase):
         time.sleep(1)
         driver.execute_script("PegawaiPilih.windowSave();")
         time.sleep(1)
-        save_get_alert(
+        actual = save_get_alert(
             driver,
             expected="Status Penghuni belum diisi!",
             test_name="TC_PNGB_005")
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
 
-    def test_TC_PNGB_006(self):
+    def test_TC_PNGB_006(self, isedit=False):
         driver = self.driver
         value = "5"
         time.sleep(1)
@@ -93,18 +102,22 @@ class TC_PNGB(unittest.TestCase):
         if value != "5":
             print("test_TC_PNGB_007")
             print("----TC_PNGB_006 skipped---- ")
-            save_get_alert(
+            actual = save_get_alert(
                 self.driver, "Nomor Identitas Pemakai belum diisi!", "TC_PNGB_007"
             )
         else:
             print("test_TC_PNGB_006")
-            save_get_alert(
+            actual = save_get_alert(
                 self.driver,
                 expected="Status Pemakai Lainnya belum diisi!",
                 test_name="TC_PNGB_006"
             )
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
 
-    def test_TC_PNGB_007(self):
+    def test_TC_PNGB_007(self, isedit=False):
         driver = self.driver
         try:
             driver.switch_to.alert.accept()
@@ -120,64 +133,91 @@ class TC_PNGB(unittest.TestCase):
         print("test_TC_PNGB_007")
         form_input(driver, By.ID, "fmstatus_pemakai_lainnya", "pegawai pembantu")
         time.sleep(1)
-        save_get_alert(
+        actual = save_get_alert(
             self.driver,
             expected= "Nomor Identitas Penghuni belum diisi!",
             test_name="TC_PNGB_007"
         )
+        
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
+            
 
-    def test_TC_PNGB_008(self):
+    def test_TC_PNGB_008(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_008")
         form_input(driver, By.ID, "fmno_ktp_pemakai", "12345678")
         time.sleep(1)
-        save_get_alert(
+        actual = save_get_alert(
             driver,
             expected="Alamat Penghuni belum diisi!",
             test_name="TC_PNGB_008")
-        pass
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
 
-    def test_TC_PNGB_009(self):
+    def test_TC_PNGB_009(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_009")
         form_input(driver, By.ID, "fmalamat_pemakai", "Alamat Testing")
         time.sleep(1)
-        save_get_alert(
+        actual = save_get_alert(
             driver,
             expected="Nomor BAST belum diisi!",
             test_name="TC_PNGB_009")
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
 
-    def test_TC_PNGB_010(self):
+    def test_TC_PNGB_010(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_010")
         form_input(driver, By.ID, "fmno_bast", "08/bast/2025")
         time.sleep(1)
-        save_get_alert(
+        actual = save_get_alert(
             driver,
             expected="Tanggal BAST belum diisi!",
             test_name="TC_PNGB_010")
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
 
-    def test_TC_PNGB_011(self):
+    def test_TC_PNGB_011(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_011")
         time.sleep(1)
         driver.find_element(By.ID, "fmtgl_bast").send_keys("02-05-2025")
-        save_get_alert(
+        actual = save_get_alert(
             driver,
             expected="Diinput Oleh belum diisi!",
             test_name="TC_PNGB_011")
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
 
-    def test_TC_PNGB_012(self):
+    def test_TC_PNGB_012(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_012")
         Dropdown(driver, identifier="fmdiinput_oleh", value="1", by="id")
         time.sleep(1)
-        save_get_alert(
+        if isedit:
+            expected="Diinput Nama belum diisi!"
+        else:
+            expected="Diinput Nama belum dipilih!"
+            
+        actual = save_get_alert(
             driver,
-            expected="Diinput Nama belum dipilih!",
+            expected,
             test_name="TC_PNGB_012")
+        
 
-    def test_TC_PNGB_013(self): 
+    def test_TC_PNGB_013(self, isedit=False): 
         driver = self.driver
         print("test_TC_PNGB_013")
         button(driver, By.ID, "fmdiinput_nama_button")
@@ -210,8 +250,8 @@ class TC_PNGB(unittest.TestCase):
     #   tidak ada barang yang ada pada tahun 2025
     #   (tgl transaksi di lock pada tahun ini jadi tidak dapat di tes kecuali dapat di buat baru 
     #   tapi tidak tahu alur nya nanti akan di tanyakan terlebih dahulu)
-    
-    def test_TC_PNGB_015(self):
+
+    def test_TC_PNGB_015(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_015")
         
@@ -221,14 +261,18 @@ class TC_PNGB(unittest.TestCase):
         set_tgl_buku(self.driver, changed_dt)
         
         time.sleep(2)
-        save_get_alert(
+        actual = save_get_alert(
             driver,
             expected="Tanggal Transaksi Pengamanan tidak lebih kecil dari Tanggal BAST! (02-05-2025)",
             test_name="TC_PNGB_015")
         time.sleep(1)
+        if isedit:
+            return actual
+        else:
+            TC_PNGB.actual = actual
          
     #Simpan akhir
-    def test_TC_PNGB_016(self):
+    def test_TC_PNGB_016(self, isedit=False):
         driver = self.driver
         print("test_TC_PNGB_016")
        
@@ -264,7 +308,7 @@ class TC_PNGB(unittest.TestCase):
         print("test_TC_PNGB_018")
         self.driver.get(f"{self.url}pages.php?Pg=pengamananGedung")
         time.sleep(1)
-        filter_pengamanan(driver, self.nibar)
+        filter_pengamanan(driver, self.nibar or "")
         time.sleep(1)
         checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
@@ -285,26 +329,26 @@ class TC_PNGB(unittest.TestCase):
         
         time.sleep(1)
 
-    def test_ZZZ_998(self):
-        self.driver.get(f"{self.url}pages.php?Pg=pengamananGedungTrans")
-        self.driver.execute_script("document.body.style.zoom='80%'")
-        time.sleep(1)
-        checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        self.driver.find_element(By.PARTIAL_LINK_TEXT, "Batal").click()
-        time.sleep(1)
+    # def test_ZZZ_998(self):
+    #     self.driver.get(f"{self.url}pages.php?Pg=pengamananGedungTrans")
+    #     self.driver.execute_script("document.body.style.zoom='80%'")
+    #     time.sleep(1)
+    #     checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
+    #     time.sleep(1)
+    #     self.driver.find_element(By.PARTIAL_LINK_TEXT, "Batal").click()
+    #     time.sleep(1)
 
-        alert = Alert(self.driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
-        time.sleep(1)
+    #     alert = Alert(self.driver)
+    #     alert_text = alert.text
+    #     print(f"ℹ️ Alert muncul: {alert_text}")
+    #     alert.accept()
+    #     time.sleep(1)
 
-        alert = Alert(self.driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
-        time.sleep(1)
+    #     alert = Alert(self.driver)
+    #     alert_text = alert.text
+    #     print(f"ℹ️ Alert muncul: {alert_text}")
+    #     alert.accept()
+    #     time.sleep(1)
 
 
 if __name__ == "__main__":

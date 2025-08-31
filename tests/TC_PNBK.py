@@ -50,7 +50,7 @@ class TC_PNBK(unittest.TestCase):
         print("test_TC_PNBK_001")
         filter_pengamanan(self.driver, TC_PNBK.nibar)
         time.sleep(1)
-        checkbox(self.driver, identifier=2, by="index", table_selector="table.koptable")
+        checkbox(self.driver, identifier=-1, by="index", table_selector="table.koptable")
         time.sleep(1)
         
         href_button(self.driver, "javascript:pengamananPeralatanTrans.formPengembalian()")
@@ -208,7 +208,7 @@ class TC_PNBK(unittest.TestCase):
         
         button(driver, By.ID, "fmdiinput_nama_button")
         time.sleep(2)
-        checkbox(self.driver, identifier=2, by="index", table_selector="#PegawaiPilih_cont_daftar > table")
+        checkbox(self.driver, identifier=-1, by="index", table_selector="#PegawaiPilih_cont_daftar > table")
         time.sleep(2)      
         pilih_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)'))
@@ -348,7 +348,7 @@ class TC_PNBK(unittest.TestCase):
         print("test_TC_PNBK_017")
         driver.get(f"{self.url}pages.php?Pg=pengamananPeralatanTrans")
         time.sleep(1)
-        checkbox(self.driver, identifier=2, by="index", table_selector="table.koptable")
+        checkbox(self.driver, identifier=-1, by="index", table_selector="table.koptable")
         time.sleep(1)
         
         href_button(self.driver, "javascript:pengamananPeralatanTrans.formPengembalian()")
@@ -369,28 +369,28 @@ class TC_PNBK(unittest.TestCase):
         alert.accept()
         
     
-    def test_ZZZ_998(self):
-        print("reset")
-        time.sleep(1)
-        self.driver.get(f"{self.url}pages.php?Pg=pengembalianPeralatan")
-        filter_pengamanan(self.driver, TC_PNBK.nibar)
-        time.sleep(1)
-        checkbox(self.driver, identifier=2, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        href_button(self.driver, "javascript:pengembalianPeralatan.Hapus()")
-        time.sleep(1)
+    # def test_ZZZ_998(self):
+    #     print("reset")
+    #     time.sleep(1)
+    #     self.driver.get(f"{self.url}pages.php?Pg=pengembalianPeralatan")
+    #     filter_pengamanan(self.driver, TC_PNBK.nibar)
+    #     time.sleep(1)
+    #     checkbox(self.driver, identifier=-1, by="index", table_selector="table.koptable")
+    #     time.sleep(1)
+    #     href_button(self.driver, "javascript:pengembalianPeralatan.Hapus()")
+    #     time.sleep(1)
         
-        alert = Alert(self.driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
-        time.sleep(2)
+    #     alert = Alert(self.driver)
+    #     alert_text = alert.text
+    #     print(f"ℹ️ Alert muncul: {alert_text}")
+    #     alert.accept()
+    #     time.sleep(2)
         
-        alert = Alert(self.driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
-        time.sleep(1)    
+    #     alert = Alert(self.driver)
+    #     alert_text = alert.text
+    #     print(f"ℹ️ Alert muncul: {alert_text}")
+    #     alert.accept()
+    #     time.sleep(1)    
             
 
 

@@ -4,31 +4,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 
 
-def Dropdown(driver, identifier, value, by="id", timeout=10, dropdown_selector=None):
-    """Memilih opsi dari elemen dropdown (<select> atau kustom).
-
-    Fungsi ini mendukung dropdown seperti `<select id="fmpenyebab_pengembalian">`
-    dengan memilih opsi berdasarkan atribut `value`. Elemen dapat ditemukan
-    menggunakan ID, indeks, atau XPath, dengan logika serupa dengan fungsi `checkbox`.
+def Dropdown(driver, identifier, value=None, by="id", timeout=10, dropdown_selector=None):
+    """Memilih opsi atau mengambil nilai default dari elemen dropdown (<select> atau kustom).
 
     Args:
-        driver: Objek Selenium WebDriver (misalnya, `webdriver.Chrome()`).
-        identifier: Pengenal elemen dropdown. Bergantung pada `by`:
-            - `by="id"`: ID elemen (misalnya, `"fmpenyebab_pengembalian"`).
-            - `by="index"`: Indeks elemen `<select>` (dimulai dari 0).
-            - `by="xpath"`: Jalur XPath penuh (misalnya, `/html/body/div[1]/.../select`).
-        value: Nilai atribut `value` dari opsi yang ingin dipilih
-            (misalnya, `"1"`, `"2"` untuk `<option value="2">2. Purnatugas /Pensiun</option>`).
-        by: Metode untuk menemukan elemen: `"id"` (default), `"index"`, atau `"xpath"`.
-        timeout: Waktu tunggu (detik) hingga elemen dapat diklik.
-        dropdown_selector: Pemilih CSS untuk membatasi pencarian elemen `<select>`
-            saat `by="index"` (misalnya, `".form-container"`). Tidak digunakan untuk
-            `by="id"` atau `by="xpath"`.
+        driver: Objek Selenium WebDriver.
+        identifier: Pengenal elemen dropdown (ID, indeks, atau XPath).
+        value: Nilai atribut `value` dari opsi yang ingin dipilih. Jika None, mengembalikan nilai default.
+        by: Metode untuk menemukan elemen: `"id"`, `"index"`, atau `"xpath"`.
+        timeout: Waktu tunggu (detik).
+        dropdown_selector: Pemilih CSS untuk `by="index"`.
 
-    Raises:
-        ValueError: Jika `by` bukan `"id"`, `"index"`, atau `"xpath"`.
-        IndexError: Jika `identifier` melebihi jumlah elemen `<select>` saat `by="index"`.
-        Exception: Jika dropdown tidak ditemukan atau opsi tidak dapat dipilih.
+    Returns:
+        str or None: Nilai default jika `value=None`, None jika memilih opsi.
     """
     wait = WebDriverWait(driver, timeout)
 
@@ -59,6 +47,14 @@ def Dropdown(driver, identifier, value, by="id", timeout=10, dropdown_selector=N
         else:
             raise ValueError("Parameter 'by' harus 'id', 'index', atau 'xpath'.")
 
+        if value is None:  # Get default value
+            if dropdown_el.tag_name.lower() == "select":
+                select = Select(dropdown_el)
+                selected_option = select.first_selected_option
+                return selected_option.get_attribute("value") if selected_option else None
+            else:
+                raise Exception("Elemen bukan dropdown <select> standar.")
+
         if value == "__reset__":
             if dropdown_el.tag_name.lower() == "select":
                 select = Select(dropdown_el)
@@ -67,7 +63,7 @@ def Dropdown(driver, identifier, value, by="id", timeout=10, dropdown_selector=N
                 dropdown_el.click()
                 option_el = dropdown_el.find_element(By.XPATH, ".//li[1]")
                 option_el.click()
-            return
+            return None
 
         if dropdown_el.tag_name.lower() == "select":
             select = Select(dropdown_el)
@@ -77,6 +73,7 @@ def Dropdown(driver, identifier, value, by="id", timeout=10, dropdown_selector=N
             option_xpath = f".//*[text()='{value}' or @value='{value}']"
             option_el = wait.until(EC.element_to_be_clickable((By.XPATH, option_xpath)))
             option_el.click()
+        return None
 
     except Exception as e:
         raise Exception(
