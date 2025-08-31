@@ -13,10 +13,12 @@ def save_get_alert(
     save_button="btSimpan",
     accept=True,
     timeout=5,
+    with_button=True
 ):
-    button(driver, By.ID, save_button)
-    actual = ""
-    alert = None
+    if with_button:
+        button(driver, By.ID, save_button)
+        actual = ""
+        alert = None
 
     try:
         alert = WebDriverWait(driver, timeout).until(EC.alert_is_present())
