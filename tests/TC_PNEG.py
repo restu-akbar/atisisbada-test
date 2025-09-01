@@ -264,10 +264,10 @@ class TC_PNEG(unittest.TestCase):
             test_name="TC_PNGB_004"
         )
         
-        tc_pngb.test_TC_PNGB_005(isedit=False)
+        tc_pngb.test_TC_PNGB_005(isedit=True)
         tc_pngb.test_TC_PNGB_006(isedit=False)
-        tc_pngb.test_TC_PNGB_007(isedit=False)
-        tc_pngb.test_TC_PNGB_008(isedit=False)
+        tc_pngb.test_TC_PNGB_007(isedit=True)
+        tc_pngb.test_TC_PNGB_008(isedit=True)
         tc_pngb.test_TC_PNGB_009(isedit=False)
         tc_pngb.test_TC_PNGB_010(isedit=False)
         tc_pngb.test_TC_PNGB_011(isedit=False)

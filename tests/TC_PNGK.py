@@ -75,9 +75,15 @@ class TC_PNGK(unittest.TestCase):
         time.sleep(1)
         Dropdown(driver, identifier="fmpenyebab_pengembalian", value=value, by="id")
         time.sleep(1)
-        actual =save_get_alert(
+        
+        if isedit:
+            expected = "Penyebab Pengembalian lainnya belum diisi!"
+        else:
+            expected = "Penyebab Pengembalian Lainnya belum diisi!"
+
+        actual = save_get_alert(
             driver,
-            expected="Penyebab Pengembalian Lainnya belum diisi!",
+            expected=expected,
             test_name="TC_PNGK_002")
         if isedit:
             return actual
@@ -118,9 +124,15 @@ class TC_PNGK(unittest.TestCase):
         print("test_TC_PNGK_005")
         time.sleep(1)
         driver.find_element(By.ID, "fmtgl_bast").send_keys("05-05-2025")
+        
+        if isedit:
+            expected = "Nama Penerima belum diisi!"
+        else:
+            expected = "Penerima belum dipilih!"
+        
         actual = save_get_alert(
             driver,
-            expected="Penerima belum dipilih!",
+            expected=expected,
             test_name="TC_PNGK_005")
         if isedit:
             return actual
@@ -152,9 +164,15 @@ class TC_PNGK(unittest.TestCase):
         driver = self.driver
         print("test_TC_PNGK_007")
         form_input(driver, By.ID, "fmpenerima_pangkat", "4B")
+        
+        if isedit:
+            expected = "Kondisi Pengembalian belum dipilih!"
+        else:
+            expected = "Kondisi Barang belum dipilih!"
+        
         actual = save_get_alert(
             driver,
-            expected="Kondisi Barang belum dipilih!",
+            expected=expected,
             test_name="TC_PNGK_007") 
         if isedit:
             return actual
@@ -181,9 +199,15 @@ class TC_PNGK(unittest.TestCase):
         print("test_TC_PNGK_009")
         value="1"
         Dropdown(driver, identifier="fmdiinput_oleh", value=value, by="id")
+        
+        if isedit:
+            expected = "Diinput Nama belum diisi!"
+        else:
+            expected = "Diinput Nama belum dipilih!"
+        
         actual = save_get_alert(
             driver,
-            expected="Diinput Nama belum dipilih!",
+            expected=expected,
             test_name="TC_PNGK_009"
         )
         if isedit:

@@ -84,9 +84,15 @@ class TC_PNGB(unittest.TestCase):
         time.sleep(1)
         driver.execute_script("PegawaiPilih.windowSave();")
         time.sleep(1)
+        
+        if isedit:
+            expected = "Status Pemakai belum diisi!"
+        else:
+            expected = "Status Penghuni belum diisi!"
+        
         actual = save_get_alert(
             driver,
-            expected="Status Penghuni belum diisi!",
+            expected=expected,
             test_name="TC_PNGB_005")
         if isedit:
             return actual
@@ -133,9 +139,15 @@ class TC_PNGB(unittest.TestCase):
         print("test_TC_PNGB_007")
         form_input(driver, By.ID, "fmstatus_pemakai_lainnya", "pegawai pembantu")
         time.sleep(1)
+        
+        if isedit:
+            expected = "Nomor Identitas Pemakai belum diisi!"
+        else:
+            expected = "Nomor Identitas Penghuni belum diisi!"
+        
         actual = save_get_alert(
             self.driver,
-            expected= "Nomor Identitas Penghuni belum diisi!",
+            expected=expected,
             test_name="TC_PNGB_007"
         )
         
@@ -150,9 +162,15 @@ class TC_PNGB(unittest.TestCase):
         print("test_TC_PNGB_008")
         form_input(driver, By.ID, "fmno_ktp_pemakai", "12345678")
         time.sleep(1)
+        
+        if isedit:
+            expected = "Alamat Pemakai belum diisi!"
+        else:
+            expected = "Alamat Penghuni belum diisi!"
+        
         actual = save_get_alert(
             driver,
-            expected="Alamat Penghuni belum diisi!",
+            expected=expected,
             test_name="TC_PNGB_008")
         if isedit:
             return actual

@@ -161,12 +161,12 @@ class TC_PNEK(unittest.TestCase):
             test_name="TC_PNEK_004"
         )
         
-        tc_pngk.test_TC_PNGK_002(isedit=False)
-        tc_pngk.test_TC_PNGK_003(isedit=False)
+        tc_pngk.test_TC_PNGK_002(isedit=True)
+        tc_pngk.test_TC_PNGK_003(isedit=True)
         tc_pngk.test_TC_PNGK_004(isedit=False)
-        tc_pngk.test_TC_PNGK_005(isedit=False)
+        tc_pngk.test_TC_PNGK_005(isedit=True)
         tc_pngk.test_TC_PNGK_006(isedit=False)
-        tc_pngk.test_TC_PNGK_007(isedit=False)
+        tc_pngk.test_TC_PNGK_007(isedit=True)
         tc_pngk.test_TC_PNGK_008(isedit=False)
         tc_pngk.test_TC_PNGK_009(isedit=True)
         
