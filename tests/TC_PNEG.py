@@ -76,7 +76,7 @@ class TC_PNEG(unittest.TestCase):
         except Exception:
             pass
 
-    @unittest.skip("Belum mau dijalankan sekarang")
+    # @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNEG_001(self):
         print("test_TC_PNEG_001")
         driver = self.driver
@@ -277,12 +277,12 @@ class TC_PNEG(unittest.TestCase):
 
 
     # @unittest.skip("Belum mau dijalankan sekarang")
-    # def test_TC_PNEG_003(self):
-    #     print("TC_PNEG_003")
-    #     data = self.__class__.shared
-    #     actual = nama_pemakai_check(self)
-    #     expected = data.get("nama_pemakai", "")
-    #     print_result(actual, expected, test_name="TC_PNEG_003")
+    def test_TC_PNEG_003(self):
+        print("TC_PNEG_003")
+        data = self.__class__.shared
+        actual = nama_pemakai_check(self)
+        expected = data.get("nama_pemakai", "")
+        print_result(actual, expected, test_name="TC_PNEG_003")
 
 
 if __name__ == "__main__":

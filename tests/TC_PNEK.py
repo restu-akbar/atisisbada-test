@@ -133,7 +133,7 @@ class TC_PNEK(unittest.TestCase):
             check_or_fail("No BAST", no_bast, row_tds[11].text)
             check_or_fail("Tgl BAST", tgl_bast, row_tds[12].text)
 
-            print_result(1, 1, test_name="TC_PNEG_001")
+            print_result(1, 1, test_name="TC_PNEK_001")
             
             time.sleep(3)
 
@@ -158,7 +158,7 @@ class TC_PNEK(unittest.TestCase):
         save_get_alert(
             driver,
             expected="Penyebab Pengembalian belum diisi!",
-            test_name="TC_PNGB_004"
+            test_name="TC_PNEK_004"
         )
         
         tc_pngk.test_TC_PNGK_002(isedit=False)
@@ -169,6 +169,13 @@ class TC_PNEK(unittest.TestCase):
         tc_pngk.test_TC_PNGK_007(isedit=False)
         tc_pngk.test_TC_PNGK_008(isedit=False)
         tc_pngk.test_TC_PNGK_009(isedit=True)
+        
+    def test_TC_PNEK_003(self):
+        print("TC_PNEK_003")
+        data = self.__class__.shared
+        actual = nama_pemakai_check(self)
+        expected = data.get("nama_pemakai", "")
+        print_result(actual, expected, test_name="TC_PNEK_003")
 
 
 if __name__ == "__main__":
