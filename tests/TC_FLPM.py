@@ -18,6 +18,10 @@ import time
 import re
 
 
+TBODY_CSS = "table.koptable tbody"
+DATA_ROW_XPATH = "//table[@class='koptable']//tbody//tr[@id]"
+
+
 class TC_FLPM(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -37,57 +41,31 @@ class TC_FLPM(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        try:
-            logout(cls.driver)
-        except Exception as e:
-            print(f"⚠️ Logout gagal: {e}")
-        finally:
-            cls.driver.quit()
+        #         try:
+        #             logout(cls.driver)
+        #         except Exception as e:
+        #             print(f"⚠️ Logout gagal: {e}")
+        #         finally:
+        #             cls.driver.quit()
+        #
+        cls.driver.quit()
 
-#         cls.driver.quit()
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_001(self):
-        print("test_TC_FLPM_001")
-        driver = self.driver
+        test_name = "TC_FLPM_001"
+        print("test_" + test_name)
         nibar_list = ["167192", "167193", "100000"]
 
-        success = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            nibar_list,
+            test_name,
+            "fmFiltNibar",
+            line=2,
+            column_idx=3,
+            exact=True,
+        )
 
-        for i, nibar in enumerate(nibar_list, start=1):
-            time.sleep(2)
-            filter_pengamanan(driver, text=nibar)
-
-            expected = nibar.strip()
-            xpath = f'//table[@class="koptable"]//a[normalize-space()="{expected}"]'
-
-            try:
-                elem = WebDriverWait(driver, 5).until(
-                    EC.presence_of_element_located((By.XPATH, xpath))
-                )
-                actual = (elem.text or "").strip()
-                if actual == expected:
-                    success += 1
-                else:
-                    failed.append((i, expected, actual, "mismatch nilai"))
-            except TimeoutException:
-                print(f"- Data {expected} tidak ditemukan di tabel → dianggap valid.")
-                success += 1
-
-        print_result(success, len(nibar_list), test_name="TC_FLPM_001")
-
-        if failed:
-            for idx, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmFiltNibar")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_002(self):
         driver = self.driver
 
@@ -188,873 +166,214 @@ class TC_FLPM(unittest.TestCase):
             )
         Dropdown(driver, identifier="fmKondisiBarang", value="__reset__")
 
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_003(self):
-        print("test_TC_FLPM_003")
-        driver = self.driver
+        test_name = "TC_FLPM_003"
+        print("test_" + test_name)
+        kode_barang_list = ["1.3.2.13.03.01.001", "1.3.2.01.03.04.001"]
 
-        codes = ["1.3.2.13.03.01.001", "1.3.2.01.03.04.001"]
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            kode_barang_list,
+            test_name,
+            "fmKodeBarang",
+            column_idx=3,
+            exact=True,
+        )
 
-        success_cases = 0
-        failed = []
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[3]"
-
-        for i, code in enumerate(codes, start=1):
-            filter_pengamanan(driver, code, "fmKodeBarang")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            if not rows:
-                failed.append(
-                    (i, code, "NOT FOUND", "tidak ditemukan di tabel (kosong)")
-                )
-                continue
-
-            def parse_kode(td_text: str | None) -> str:
-                text = td_text or ""
-                first_line = text.split("\n")[0]
-                return first_line.split("/")[0].strip()
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                td = row.find_element(By.XPATH, cell_kode_xpath)
-                actual_kode = parse_kode(td.get_attribute("innerText"))
-                if actual_kode != code:
-                    mismatches.append((idx_row, code, actual_kode, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(codes), test_name="TC_FLPM_003")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmKodeBarang")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_004(self):
-        print("test_TC_FLPM_004")
-        driver = self.driver
+        test_name = "TC_FLPM_004"
+        print("test_" + test_name)
+        name_list = ["suv", "motor"]
 
-        names = ["suv", "motor"]
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            name_list,
+            test_name,
+            "fmNamaBarang",
+            column_idx=5,
+        )
 
-        success_cases = 0
-        failed = []
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[5]"
-
-        for i, name in enumerate(names, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, name, "fmNamaBarang")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, name):
-                    mismatches.append((idx_row, name, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(names), test_name="TC_FLPM_004")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmNamaBarang")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_005(self):
-        print("test_TC_FLPM_005")
-        driver = self.driver
+        test_name = "TC_FLPM_005"
+        print("test_" + test_name)
+        type_list = ["toyota", "honda"]
 
-        types = ["toyota", "honda"]
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            type_list,
+            test_name,
+            "fmMerk",
+            column_idx=6,
+        )
 
-        success_cases = 0
-        failed = []
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[6]"
-
-        for i, merk in enumerate(types, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, merk, "fmMerk")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, merk):
-                    mismatches.append((idx_row, merk, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(types), test_name="TC_FLPM_005")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmMerk")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_006(self):
-        print("test_TC_FLPM_006")
-        driver = self.driver
+        test_name = "TC_FLPM_006"
+        print("test_" + test_name)
+        plate_list = ["A 662", "B"]
 
-        types = ["A 662", "B"]
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            plate_list,
+            test_name,
+            "fmNoPolisi",
+            column_idx=13,
+        )
 
-        success_cases = 0
-        failed = []
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[13]"
-
-        for i, merk in enumerate(types, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, merk, "fmNoPolisi")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, merk):
-                    mismatches.append((idx_row, merk, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(types), test_name="TC_FLPM_006")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmNoPolisi")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_007(self):
-        print("test_TC_FLPM_007")
-        driver = self.driver
+        test_name = "TC_FLPM_007"
+        print("test_" + test_name)
+        bpkb_list = ["F 4032561", "E"]
 
-        types = ["F 4032561", "E"]
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            bpkb_list,
+            test_name,
+            "fmNoBPKB",
+            column_idx=14,
+        )
 
-        success_cases = 0
-        failed = []
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[14]"
-
-        for i, merk in enumerate(types, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, merk, "fmNoBPKB")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, merk):
-                    mismatches.append((idx_row, merk, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(types), test_name="TC_FLPM_007")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmNoBPKB")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_008(self):
-        print("test_TC_FLPM_008")
-        driver = self.driver
+        test_name = "TC_FLPM_008"
+        print("test_" + test_name)
+        mesin_list = ["DBB5445", "KC11E1159751", "E"]
 
-        no_mesins = ["DBB5445", "KC11E1159751", "E"]
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            mesin_list,
+            test_name,
+            "fmNoMesin",
+            column_idx=12,
+        )
 
-        success_cases = 0
-        failed = []
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[12]"
-
-        for i, no_mesin in enumerate(no_mesins, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, no_mesin, "fmNoMesin")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, no_mesin):
-                    mismatches.append((idx_row, no_mesin, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(no_mesins), test_name="TC_FLPM_008")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmNoMesin")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_009(self):
-        print("test_TC_FLPM_009")
-        driver = self.driver
+        test_name = "TC_FLPM_009"
+        print("test_" + test_name)
+        rangka_list = ["MHFE2CJ3C8K014559", "MHFM1CA4-J9K-020563	", "E"]
 
-        no_rangkas = ["MHFE2CJ3C8K014559", "MHFM1CA4-J9K-020563", "E"]
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            rangka_list,
+            test_name,
+            "fmNoRangka",
+            column_idx=11,
+        )
 
-        success_cases = 0
-        failed = []
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[11]"
-
-        for i, no_rangka in enumerate(no_rangkas, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, no_rangka, "fmNoRangka")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, no_rangka):
-                    mismatches.append((idx_row, no_rangka, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(no_rangkas), test_name="TC_FLPM_009")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmNoRangka")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_010(self):
-        print("test_TC_FLPM_010")
-        driver = self.driver
-
-        no_pabriks = [
+        test_name = "TC_FLPM_010"
+        print("test_" + test_name)
+        pabrik_list = [
             "CU-PC9CKH",
             "S/N : PTSB-90931 E 2702 ( CPU ) S/N: ETLB 29A 3400",
             "E",
         ]
 
-        success_cases = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            pabrik_list,
+            test_name,
+            "fmNoPabrik",
+            column_idx=10,
+        )
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[10]"
-
-        for i, no_pabrik in enumerate(no_pabriks, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, no_pabrik, "fmNoPabrik")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, no_pabrik):
-                    mismatches.append((idx_row, no_pabrik, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(no_pabriks), test_name="TC_FLPM_010")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmNoPabrik")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_011(self):
-        print("test_TC_FLPM_011")
-        driver = self.driver
-
-        bahans = [
+        test_name = "TC_FLPM_011"
+        print("test_" + test_name)
+        bahan_list = [
             "besi",
             "campuran",
             "E",
         ]
 
-        success_cases = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            bahan_list,
+            test_name,
+            "fmBahan",
+            column_idx=8,
+        )
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[8]"
-
-        for i, bahan in enumerate(bahans, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, bahan, "fmBahan")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, bahan):
-                    mismatches.append((idx_row, bahan, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(bahans), test_name="TC_FLPM_011")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmBahan")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_012(self):
-        print("test_TC_FLPM_012")
-        driver = self.driver
-
-        keterangans = [
+        test_name = "TC_FLPM_012"
+        print("test_" + test_name)
+        keterangan_list = [
             "Keg. Pembinaan Usaha Petamb. (APBD)",
             "Mesin Pemotong Batu",
             "E",
         ]
 
-        success_cases = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            keterangan_list,
+            test_name,
+            "fmFiltKeterangan",
+            column_idx=18,
+        )
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[18]"
-
-        for i, keterangan in enumerate(keterangans, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, keterangan, "fmFiltKeterangan")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, keterangan):
-                    mismatches.append((idx_row, keterangan, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(keterangans), test_name="TC_FLPM_012")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmFiltKeterangan")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_013(self):
-        print("test_TC_FLPM_013")
-        driver = self.driver
-
-        nama_pemakais = [
+        test_name = "TC_FLPM_013"
+        print("test_" + test_name)
+        nama_list = [
             "luki",
+            "sapta",
             "E",
         ]
 
-        success_cases = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            nama_list,
+            test_name,
+            "fmFiltNamaPemakai",
+            column_idx=19,
+        )
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[19]"
-
-        for i, nama_pemakai in enumerate(nama_pemakais, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, nama_pemakai, "fmFiltNamaPemakai")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, nama_pemakai):
-                    mismatches.append((idx_row, nama_pemakai, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(nama_pemakais), test_name="TC_FLPM_013")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmFiltNamaPemakai")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_014(self):
-        print("test_TC_FLPM_014")
-        driver = self.driver
-
-        no_identitas_pemakais = [
+        test_name = "TC_FLPM_014"
+        print("test_" + test_name)
+        no_identitas_list = [
             "12345678",
             "E",
         ]
 
-        success_cases = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            no_identitas_list,
+            test_name,
+            "fmFiltNoIdentitasPemakai",
+            line=2,
+            column_idx=19,
+            exact=True,
+        )
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[19]"
-
-        for i, no_identitas_pemakai in enumerate(no_identitas_pemakais, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, no_identitas_pemakai, "fmFiltNoIdentitasPemakai")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                if not self.is_found(actual, no_identitas_pemakai):
-                    mismatches.append(
-                        (idx_row, no_identitas_pemakai, actual, "mismatch nilai")
-                    )
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(no_identitas_pemakais), test_name="TC_FLPM_014")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        time.sleep(1)
-        clear_readonly_input(driver, By.ID, "fmFiltNoIdentitasPemakai")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_015(self):
-        print("test_TC_FLPM_015")
-        driver = self.driver
-
-        no_basts = [
+        test_name = "TC_FLPM_015"
+        print("test_" + test_name)
+        no_bast_list = [
             "08/bast/2025",
             "b",
         ]
 
-        success_cases = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            no_bast_list,
+            test_name,
+            "fmFiltNoBAST",
+            line=3,
+            column_idx=19,
+        )
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[19]"
-
-        for i, no_bast in enumerate(no_basts, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, no_bast, "fmFiltNoBAST")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    raw_text = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-
-                lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
-                actual = lines[2] if len(lines) > 2 else lines[0] if lines else ""
-
-                if not self.is_found(actual, no_bast):
-                    mismatches.append((idx_row, no_bast, actual, "mismatch nilai"))
-
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(no_basts), test_name="TC_FLPM_015")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmFiltNoBAST")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_016(self):
         driver = self.driver
 
@@ -1158,85 +477,24 @@ class TC_FLPM(unittest.TestCase):
             )
         Dropdown(driver, identifier="fmKondisiBarang", value="__reset__")
 
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_017(self):
-        print("test_TC_FLPM_017")
-        driver = self.driver
-
-        tahun_bukus = [
+        test_name = "TC_FLPM_017"
+        print("test_" + test_name)
+        tahun_buku_list = [
             "2015",
             "2017",
             "2025",
         ]
 
-        success_cases = 0
-        failed = []
+        validate_by_filter_form(
+            self.driver,
+            self.wait,
+            tahun_buku_list,
+            test_name,
+            "fmTahunBuku",
+            column_idx=17,
+        )
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
-        cell_kode_xpath = "./td[17]"
-
-        for i, tahun_buku in enumerate(tahun_bukus, start=1):
-            time.sleep(1)
-            filter_pengamanan(driver, tahun_buku, "fmTahunBuku")
-
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
-
-            mismatches = []
-            for idx_row, row in enumerate(rows, start=1):
-                try:
-                    td = row.find_element(By.XPATH, cell_kode_xpath)
-                    raw_text = (td.get_attribute("innerText") or "").strip()
-                except NoSuchElementException:
-                    continue
-                first_line = next(
-                    (line.strip() for line in raw_text.splitlines() if line.strip()), ""
-                )
-                m = re.search(r"\b\d{2}-\d{2}-(\d{4})\b", first_line)
-                actual_year = m.group(1) if m else ""
-                if actual_year != tahun_buku:
-                    mismatches.append(
-                        (
-                            idx_row,
-                            tahun_buku,
-                            first_line,
-                            f"tahun '{actual_year}' tidak sesuai",
-                        )
-                    )
-            if mismatches:
-                failed.extend(
-                    [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
-                )
-            else:
-                success_cases += 1
-
-        print_result(success_cases, len(tahun_bukus), test_name="TC_FLPM_017")
-
-        if failed:
-            for idx_case, exp, act, reason in failed:
-                print(
-                    f"- Gagal di baris data ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
-                )
-            print(
-                "========================================================================"
-            )
-        clear_readonly_input(driver, By.ID, "fmTahunBuku")
-
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_018(self):
         print("test_TC_FLPM_018")
         driver = self.driver
@@ -1250,31 +508,15 @@ class TC_FLPM(unittest.TestCase):
         success_cases = 0
         failed = []
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
         cell_kode_xpath = "./td[9]"
 
         for i, (start, end) in enumerate(tahun_perolehans, start=1):
             time.sleep(1)
-            self.filter_range(
-                start, "fmTahunPerolehanAwal", end, "fmTahunPerolehanAkhir"
+            filter_range(
+                driver, start, "fmTahunPerolehanAwal", end, "fmTahunPerolehanAkhir"
             )
 
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
+            rows = get_table_rows(self.wait, driver)
 
             mismatches = []
             for idx_row, row in enumerate(rows, start=1):
@@ -1321,7 +563,6 @@ class TC_FLPM(unittest.TestCase):
         clear_readonly_input(driver, By.ID, "fmTahunPerolehanAwal")
         clear_readonly_input(driver, By.ID, "fmTahunPerolehanAkhir")
 
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_019(self):
         print("test_TC_FLPM_019")
         driver = self.driver
@@ -1335,31 +576,15 @@ class TC_FLPM(unittest.TestCase):
         success_cases = 0
         failed = []
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
         cell_kode_xpath = "./td[16]"
 
         for i, (start, end) in enumerate(harga_perolehans, start=1):
             time.sleep(1)
-            self.filter_range(
-                start, "fmHargaPerolehanAwal", end, "fmHargaPerolehanAkhir"
+            filter_range(
+                driver, start, "fmHargaPerolehanAwal", end, "fmHargaPerolehanAkhir"
             )
 
-            try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
-            except Exception:
-                old_tbody = None
-
-            try:
-                if old_tbody:
-                    self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
-            )
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
+            rows = get_table_rows(self.wait, driver)
 
             mismatches = []
             for idx_row, row in enumerate(rows, start=1):
@@ -1410,7 +635,6 @@ class TC_FLPM(unittest.TestCase):
         clear_readonly_input(driver, By.ID, "fmHargaPerolehanAwal")
         clear_readonly_input(driver, By.ID, "fmHargaPerolehanAkhir")
 
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_020(self):
         print("test_TC_FLPM_020")
 
@@ -1428,9 +652,6 @@ class TC_FLPM(unittest.TestCase):
 
         failed = []
         test_pass = True
-
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
 
         def first_non_empty_line(text: str) -> str:
             for line in (text or "").splitlines():
@@ -1456,7 +677,7 @@ class TC_FLPM(unittest.TestCase):
             Select(driver.find_element(*dropdown_locator)).select_by_value(value)
 
             try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
+                old_tbody = driver.find_element(By.CSS_SELECTOR, TBODY_CSS)
             except Exception:
                 old_tbody = None
 
@@ -1470,12 +691,12 @@ class TC_FLPM(unittest.TestCase):
                 pass
 
             self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
+                EC.presence_of_element_located((By.CSS_SELECTOR, TBODY_CSS))
             )
             try:
                 self.wait.until(
                     EC.any_of(
-                        EC.presence_of_element_located((By.XPATH, data_row_xpath)),
+                        EC.presence_of_element_located((By.XPATH, DATA_ROW_XPATH)),
                         EC.presence_of_element_located(
                             (
                                 By.XPATH,
@@ -1493,7 +714,7 @@ class TC_FLPM(unittest.TestCase):
             except TimeoutException:
                 pass
 
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
+            rows = driver.find_elements(By.XPATH, DATA_ROW_XPATH)
             if not rows:
                 print(f"ℹ️ Tidak ada data untuk filter '{label}'.")
                 continue
@@ -1558,15 +779,12 @@ class TC_FLPM(unittest.TestCase):
         Dropdown(driver, identifier="fmOrder", value="__reset__")
         clear_readonly_input(self.driver, By.ID, "jmlperpage")
 
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_021(self):
         print("test_TC_FLPM_021")
         driver = self.driver
 
         per_pages = ["10", "25", "50", "100"]
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
         nodata_xpath = "//*[contains(translate(., 'TIDAK ADA DATA', 'tidak ada data'), 'tidak ada data') or contains(., 'No data')]"
 
         success_cases = 0
@@ -1576,7 +794,7 @@ class TC_FLPM(unittest.TestCase):
             print(f"🔎 Kasus ke-{i}: jml per page = {per_page}")
 
             try:
-                old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
+                old_tbody = driver.find_element(By.CSS_SELECTOR, TBODY_CSS)
             except Exception:
                 old_tbody = None
 
@@ -1590,12 +808,12 @@ class TC_FLPM(unittest.TestCase):
                 pass
 
             self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css))
+                EC.presence_of_element_located((By.CSS_SELECTOR, TBODY_CSS))
             )
             try:
                 self.wait.until(
                     EC.any_of(
-                        EC.presence_of_element_located((By.XPATH, data_row_xpath)),
+                        EC.presence_of_element_located((By.XPATH, DATA_ROW_XPATH)),
                         EC.presence_of_element_located((By.XPATH, nodata_xpath)),
                         EC.presence_of_element_located(
                             (
@@ -1608,7 +826,7 @@ class TC_FLPM(unittest.TestCase):
             except TimeoutException:
                 pass
 
-            rows = driver.find_elements(By.XPATH, data_row_xpath)
+            rows = driver.find_elements(By.XPATH, DATA_ROW_XPATH)
             count = len(rows)
             expected = int(per_page)
 
@@ -1635,15 +853,12 @@ class TC_FLPM(unittest.TestCase):
             )
         clear_readonly_input(self.driver, By.ID, "jmlperpage")
 
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_022(self):
         print("test_TC_FLPM_022")
         import re
 
         driver = self.driver
 
-        tbody_css = "table.koptable tbody"
-        data_row_xpath = "//table[@class='koptable']//tbody//tr[@id]"
         price_cell_xpath = "./td[16]"
         total_row_xpath = "//table[@class='koptable']//tbody//tr[td//b[contains(normalize-space(),'Total per Halaman')]]"
         total_cell_xpath = (
@@ -1671,7 +886,7 @@ class TC_FLPM(unittest.TestCase):
             return int(s)
 
         try:
-            old_tbody = driver.find_element(By.CSS_SELECTOR, tbody_css)
+            old_tbody = driver.find_element(By.CSS_SELECTOR, TBODY_CSS)
         except Exception:
             old_tbody = None
 
@@ -1681,11 +896,11 @@ class TC_FLPM(unittest.TestCase):
         except TimeoutException:
             pass
 
-        self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, tbody_css)))
+        self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, TBODY_CSS)))
         try:
             self.wait.until(
                 EC.any_of(
-                    EC.presence_of_element_located((By.XPATH, data_row_xpath)),
+                    EC.presence_of_element_located((By.XPATH, DATA_ROW_XPATH)),
                     EC.presence_of_element_located((By.XPATH, total_row_xpath)),
                     EC.presence_of_element_located((By.XPATH, nodata_xpath)),
                 )
@@ -1693,7 +908,7 @@ class TC_FLPM(unittest.TestCase):
         except TimeoutException:
             pass
 
-        rows = driver.find_elements(By.XPATH, data_row_xpath)
+        rows = driver.find_elements(By.XPATH, DATA_ROW_XPATH)
 
         computed_sum = 0
         for idx_row, row in enumerate(rows, start=1):
@@ -1722,17 +937,17 @@ class TC_FLPM(unittest.TestCase):
             displayed_total = None
 
         print(
-            f"Σ Computed: {computed_sum:,} | Display: {displayed_total if displayed_total is not None else 'N/A'} ({total_text})"
+            f"Σ Computed: {computed_sum:,} | Actual Display: {displayed_total if displayed_total is not None else 'N/A'} ({total_text})"
         )
 
         if len(rows) == 0:
-            test_pass = displayed_total in (None, 0)
+            test_pass = False
         else:
             test_pass = displayed_total is not None and computed_sum == displayed_total
 
-        print_result(test_pass, True, "TC_FLPM_022")
-
-        if not test_pass:
+        if test_pass:
+            print_result(displayed_total, computed_sum, "TC_FLPM_022")
+        else:
             reason = (
                 "Total per Halaman tidak ditemukan"
                 if displayed_total is None
@@ -1745,7 +960,6 @@ class TC_FLPM(unittest.TestCase):
                 "========================================================================"
             )
 
-    #     @unittest.skip("untuk testing")
     def test_TC_FLPM_023(self):
         print("test_TC_FLPM_023")
         driver = self.driver
@@ -1753,69 +967,53 @@ class TC_FLPM(unittest.TestCase):
         time.sleep(1)
         Dropdown(driver, identifier="fmKondisiBarang", value="1")
         time.sleep(1)
-        kode_barang = "1.3.2.02.01.01.005"
-        form_input(driver, By.ID, "fmKodeBarang", kode_barang)
+        form_input(driver, By.ID, "fmKodeBarang", "1.3.2.02.01.01.005")
         time.sleep(1)
-        nama_barang = "SUV"
-        form_input(driver, By.ID, "fmNamaBarang", nama_barang)
+        form_input(driver, By.ID, "fmNamaBarang", "suv")
         time.sleep(1)
-        merk = "Toyota"
-        form_input(driver, By.ID, "fmMerk", merk)
+        form_input(driver, By.ID, "fmMerk", "Toyota")
         time.sleep(1)
-        no_pol = "A 662"
-        form_input(driver, By.ID, "fmNoPolisi", no_pol)
+        form_input(driver, By.ID, "fmNoPolisi", "A 662")
         time.sleep(1)
-        no_bpkb = "F 4032561"
-        form_input(driver, By.ID, "fmNoBPKB", no_bpkb)
+        form_input(driver, By.ID, "fmNoBPKB", "F 4032561")
         time.sleep(1)
-        no_mesin = "DBB5445"
-        form_input(driver, By.ID, "fmNoMesin", no_mesin)
+        form_input(driver, By.ID, "fmNoMesin", "DBB5445")
         time.sleep(1)
-        no_rangka = "MHFE2CJ3C8K014559"
-        form_input(driver, By.ID, "fmNoRangka", no_rangka)
+        form_input(driver, By.ID, "fmNoRangka", "MHFE2CJ3C8K014559")
         time.sleep(1)
-        bahan = "campuran"
-        form_input(driver, By.ID, "fmBahan", bahan)
+        form_input(driver, By.ID, "fmBahan", "campuran")
         time.sleep(1)
-        no_pabrik = ""
-        form_input(driver, By.ID, "fmNoPabrik", no_pabrik)
+        form_input(driver, By.ID, "fmNoPabrik", "")
         time.sleep(1)
-        keterangan = "Pengadaan"
-        form_input(driver, By.ID, "fmFiltKeterangan", keterangan)
+        form_input(driver, By.ID, "fmFiltKeterangan", "pengadaan")
         time.sleep(1)
-        nama_pemakai = "luki"
-        form_input(driver, By.ID, "fmFiltNamaPemakai", nama_pemakai)
+        form_input(driver, By.ID, "fmFiltNamaPemakai", "luki")
         time.sleep(1)
-        no_bast = "08/bast/2025"
-        form_input(driver, By.ID, "fmFiltNoBAST", no_bast)
+        form_input(driver, By.ID, "fmFiltNoIdentitasPemakai", "12345678")
         time.sleep(1)
-        no_identitas_pemakai = "12345678"
-        form_input(driver, By.ID, "fmFiltNoIdentitasPemakai", no_identitas_pemakai)
+        form_input(driver, By.ID, "fmFiltNoBAST", "08/bast/2025")
         time.sleep(1)
         Dropdown(driver, identifier="fmFiltStatusPengamanan", value="1")
         time.sleep(1)
-        tahun_buku = "2008"
-        form_input(driver, By.ID, "fmTahunBuku", tahun_buku)
+        form_input(driver, By.ID, "fmTahunBuku", "2008")
         time.sleep(1)
         tahun_perolehan = ["2008", "2010"]
-        self.filter_range(
+        filter_range(
+            driver,
             tahun_perolehan[0],
             "fmTahunPerolehanAwal",
             tahun_perolehan[1],
             "fmTahunPerolehanAkhir",
         )
         time.sleep(1)
-        self.wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "table.koptable tbody"))
-        )
-        row = driver.find_elements(
-            By.XPATH, "//table[@class='koptable']//tbody//tr[@id]"
-        )
+        self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, TBODY_CSS)))
+        row = driver.find_elements(By.XPATH, DATA_ROW_XPATH)
 
         print_result(True, bool(row), test_name="TC_FLPM_023")
         clear_readonly_input(driver, By.ID, "fmFiltNibar")
         Dropdown(driver, identifier="fmKondisiBarang", value="__reset__")
         clear_readonly_input(driver, By.ID, "fmKodeBarang")
+        clear_readonly_input(driver, By.ID, "fmNamaBarang")
         clear_readonly_input(driver, By.ID, "fmMerk")
         clear_readonly_input(driver, By.ID, "fmNoPolisi")
         clear_readonly_input(driver, By.ID, "fmNoBPKB")
@@ -1832,7 +1030,7 @@ class TC_FLPM(unittest.TestCase):
         clear_readonly_input(driver, By.ID, "fmTahunPerolehanAwal")
         clear_readonly_input(driver, By.ID, "fmTahunPerolehanAkhir")
 
-    #     @unittest.skip("untuk testing")
+    #
     def test_TC_FLPM_024(self):
         print("test_TC_FLPM_024")
         self.test_TC_FLPM_001()
@@ -1859,18 +1057,98 @@ class TC_FLPM(unittest.TestCase):
         self.test_TC_FLPM_022()
         self.test_TC_FLPM_023()
 
-    def is_found(self, actual: str | None, name: str | None) -> bool:
-        if not actual or not name:
-            return False
-        return name.lower() in actual.strip().lower()
 
-    def filter_range(self, start, locator_start, end, locator_end, submit=True):
-        form_input(self.driver, By.ID, locator_start, start)
-        time.sleep(1)
-        form_input(self.driver, By.ID, locator_end, end)
-        time.sleep(1)
-        if submit:
-            button(self.driver, By.ID, "btTampil")
+def validate_by_filter_form(
+    driver,
+    wait,
+    values_to_check: list[str],
+    test_name,
+    filter_form,
+    *,
+    line: int = 1,
+    column_idx: int | None = None,
+    exact: bool = False,
+    print_detail: bool = True,
+):
+    success = 0
+    failed: list[tuple[int, str, str, str]] = []
+    cell_xpath_tpl = "./td[{idx}]"
+
+    for i, expected in enumerate(values_to_check, start=1):
+        filter_pengamanan(driver, expected, filter_form)
+        rows = get_table_rows(wait, driver)
+
+        mismatches = []
+        for r_idx, row in enumerate(rows, start=1):
+            td = row.find_element(By.XPATH, cell_xpath_tpl.format(idx=column_idx))
+            raw_text = td.get_attribute("innerText") or ""
+            actual = get_actual_split(raw_text, line)
+            if not is_found(actual, expected, exact):
+                mismatches.append((r_idx, expected, actual, "mismatch nilai"))
+
+        if mismatches:
+            failed.extend(
+                [(i, exp, act, reason) for (_, exp, act, reason) in mismatches]
+            )
+        else:
+            success += 1
+
+    if print_detail:
+        total = len(values_to_check)
+        print(f"{test_name}: {success}/{total} lolos")
+        if failed:
+            for idx_case, exp, act, reason in failed:
+                print(
+                    f"- Gagal pada item ke-{idx_case}: {reason} → Expected: '{exp}', Actual: '{act}'"
+                )
+            print("=" * 72)
+
+    print_result(success, len(values_to_check), test_name)
+    clear_readonly_input(driver, By.ID, filter_form)
+
+
+def get_table_rows(wait, driver):
+    try:
+        old_tbody = driver.find_element(By.CSS_SELECTOR, TBODY_CSS)
+    except Exception:
+        old_tbody = None
+    try:
+        if old_tbody:
+            wait.until(EC.staleness_of(old_tbody))
+    except TimeoutException:
+        pass
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, TBODY_CSS)))
+    return driver.find_elements(By.XPATH, DATA_ROW_XPATH)
+
+
+def get_actual_split(raw_text: str, line: int) -> str:
+    all_lines = raw_text.splitlines()
+    idx = line - 1
+    if idx < 0 or idx >= len(all_lines):
+        return ""
+    value = all_lines[idx].strip()
+    return value.rstrip("/")
+
+
+def is_found(actual: str | None, name: str | None, exact: bool = False) -> bool:
+    if not actual or not name:
+        return False
+
+    actual_clean = actual.strip().lower()
+    name_clean = name.strip().lower()
+
+    if exact:
+        return actual_clean == name_clean
+    else:
+        return name_clean in actual_clean
+
+
+def filter_range(driver, start, locator_start, end, locator_end):
+    form_input(driver, By.ID, locator_start, start)
+    time.sleep(1)
+    form_input(driver, By.ID, locator_end, end)
+    time.sleep(1)
+    button(driver, By.ID, "btTampil")
 
 
 if __name__ == "__main__":
