@@ -1,3 +1,4 @@
+from typing import Callable
 import unittest
 import os
 from dotenv import load_dotenv
@@ -37,21 +38,20 @@ class TC_FLPM(unittest.TestCase):
         time.sleep(3)
         driver.get(f"{cls.url}pages.php?Pg=pengamananPeralatan")
         time.sleep(1)
-        cls.wait = WebDriverWait(driver, 10)
+        cls.wait = WebDriverWait(driver, 5)
 
     @classmethod
     def tearDownClass(cls):
-        #         try:
-        #             logout(cls.driver)
-        #         except Exception as e:
-        #             print(f"⚠️ Logout gagal: {e}")
-        #         finally:
-        #             cls.driver.quit()
-        #
-        cls.driver.quit()
+        try:
+            logout(cls.driver)
+        except Exception as e:
+            print(f"⚠️ Logout gagal: {e}")
+        finally:
+            cls.driver.quit()
 
-    def test_TC_FLPM_001(self):
-        test_name = "TC_FLPM_001"
+    #         cls.driver.quit()
+
+    def test_TC_FLPM_001(self, test_name="TC_FLPM_001"):
         print("test_" + test_name)
         nibar_list = ["167192", "167193", "100000"]
 
@@ -66,108 +66,41 @@ class TC_FLPM(unittest.TestCase):
             exact=True,
         )
 
-    def test_TC_FLPM_002(self):
+    def test_TC_FLPM_002(self, test_name="TC_FLPM_002", col: str = "15"):
+        print("test_" + test_name)
         driver = self.driver
+        wait = self.wait
 
-        dropdown_locator = (By.ID, "fmKondisiBarang")
-        dropdown = Select(driver.find_element(*dropdown_locator))
+        if col == "6":
 
-        options_data = []
-        for opt in dropdown.options:
-            val = opt.get_attribute("value")
-            if not val:
-                continue
-            options_data.append((val, (opt.text or "").strip()))
+            def _pre(actual_raw: str) -> str:
+                return get_actual_split(actual_raw, 5)
+        else:
 
-        failed = []
-        test_pass = True
+            def _pre(actual_raw: str) -> str:
+                return actual_raw.strip()
 
-        for i, (value, label) in enumerate(options_data, start=1):
-            print(f"🔎 Filter ke-{i}: {label} (value={value})")
+        def _validator(value: str, label: str, actual: str) -> tuple[bool, str]:
+            if value == "80":
+                ok = actual in ("Baik", "Rusak Berat")
+                return ok, "Baik/Rusak Berat"
+            elif value == "81":
+                return True, label
+            else:
+                ok = is_found(actual, label)
+                return ok, label
 
-            Select(driver.find_element(*dropdown_locator)).select_by_value(value)
+        run_dropdown_filter_test(
+            driver,
+            wait,
+            dropdown_id="fmKondisiBarang",
+            cell_col_index=int(col),
+            test_name=test_name,
+            preprocess_actual=_pre,
+            validator=_validator,
+        )
 
-            old_tbody = driver.find_element(
-                By.XPATH, "//table[@class='koptable']//tbody"
-            )
-
-            button(driver, By.ID, "btTampil")
-
-            try:
-                self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "table.koptable tbody")
-                )
-            )
-
-            try:
-                self.wait.until(
-                    EC.any_of(
-                        EC.presence_of_element_located(
-                            (By.XPATH, "//table[@class='koptable']//tbody//tr[@id]")
-                        ),
-                        EC.presence_of_element_located(
-                            (
-                                By.XPATH,
-                                "//table[@class='koptable']//tbody//tr[td[contains(.,'Total')]]",
-                            )
-                        ),
-                        EC.presence_of_element_located(
-                            (
-                                By.XPATH,
-                                "//*[contains(translate(., 'TIDAK ADA DATA', 'tidak ada data'), 'tidak ada data') or contains(., 'No data')]",
-                            )
-                        ),
-                    )
-                )
-            except TimeoutException:
-                pass
-
-            kondisi_list = driver.find_elements(
-                By.XPATH, "//table[@class='koptable']//tbody//tr[@id]/td[15]"
-            )
-
-            if not kondisi_list:
-                print(f"ℹ️ Tidak ada data untuk filter '{label}'.")
-                continue
-
-            for idx, el in enumerate(kondisi_list, start=1):
-                actual_text = el.text.strip()
-
-                if value == "80":
-                    if actual_text not in ("Baik", "Rusak Berat"):
-                        failed.append(
-                            {"row": idx, "exp": "Baik/Rusak Berat", "act": actual_text}
-                        )
-
-                elif value == "81":
-                    pass
-
-                else:
-                    if actual_text != label:
-                        failed.append({"row": idx, "exp": label, "act": actual_text})
-
-                    if failed:
-                        test_pass = False
-
-        print_result(test_pass, True, "TC_FLPM_002")
-
-        if not test_pass:
-            for f in failed:
-                print(
-                    f"- Gagal di filter [{f['exp']}] baris ke-{f['row']} → Expected: '{f['exp']}', Actual: '{f['act']}'"
-                )
-            print(
-                "========================================================================"
-            )
-        Dropdown(driver, identifier="fmKondisiBarang", value="__reset__")
-
-    def test_TC_FLPM_003(self):
-        test_name = "TC_FLPM_003"
+    def test_TC_FLPM_003(self, test_name="TC_FLPM_003"):
         print("test_" + test_name)
         kode_barang_list = ["1.3.2.13.03.01.001", "1.3.2.01.03.04.001"]
 
@@ -181,8 +114,7 @@ class TC_FLPM(unittest.TestCase):
             exact=True,
         )
 
-    def test_TC_FLPM_004(self):
-        test_name = "TC_FLPM_004"
+    def test_TC_FLPM_004(self, test_name="TC_FLPM_004"):
         print("test_" + test_name)
         name_list = ["suv", "motor"]
 
@@ -195,8 +127,7 @@ class TC_FLPM(unittest.TestCase):
             column_idx=5,
         )
 
-    def test_TC_FLPM_005(self):
-        test_name = "TC_FLPM_005"
+    def test_TC_FLPM_005(self, test_name="TC_FLPM_005", line=1):
         print("test_" + test_name)
         type_list = ["toyota", "honda"]
 
@@ -207,10 +138,10 @@ class TC_FLPM(unittest.TestCase):
             test_name,
             "fmMerk",
             column_idx=6,
+            line=line,
         )
 
-    def test_TC_FLPM_006(self):
-        test_name = "TC_FLPM_006"
+    def test_TC_FLPM_006(self, test_name="TC_FLPM_006", column=13, line=1):
         print("test_" + test_name)
         plate_list = ["A 662", "B"]
 
@@ -220,7 +151,8 @@ class TC_FLPM(unittest.TestCase):
             plate_list,
             test_name,
             "fmNoPolisi",
-            column_idx=13,
+            column_idx=column,
+            line=line,
         )
 
     def test_TC_FLPM_007(self):
@@ -319,8 +251,7 @@ class TC_FLPM(unittest.TestCase):
             column_idx=18,
         )
 
-    def test_TC_FLPM_013(self):
-        test_name = "TC_FLPM_013"
+    def test_TC_FLPM_013(self, test_name="TC_FLPM_013", column=19):
         print("test_" + test_name)
         nama_list = [
             "luki",
@@ -334,11 +265,10 @@ class TC_FLPM(unittest.TestCase):
             nama_list,
             test_name,
             "fmFiltNamaPemakai",
-            column_idx=19,
+            column_idx=column,
         )
 
-    def test_TC_FLPM_014(self):
-        test_name = "TC_FLPM_014"
+    def test_TC_FLPM_014(self, test_name="TC_FLPM_014", column=19, line=2):
         print("test_" + test_name)
         no_identitas_list = [
             "12345678",
@@ -351,13 +281,12 @@ class TC_FLPM(unittest.TestCase):
             no_identitas_list,
             test_name,
             "fmFiltNoIdentitasPemakai",
-            line=2,
-            column_idx=19,
+            line=line,
+            column_idx=column,
             exact=True,
         )
 
-    def test_TC_FLPM_015(self):
-        test_name = "TC_FLPM_015"
+    def test_TC_FLPM_015(self, test_name="TC_FLPM_015", column=19, line=3):
         print("test_" + test_name)
         no_bast_list = [
             "08/bast/2025",
@@ -370,120 +299,47 @@ class TC_FLPM(unittest.TestCase):
             no_bast_list,
             test_name,
             "fmFiltNoBAST",
-            line=3,
-            column_idx=19,
+            line=line,
+            column_idx=column,
         )
 
     def test_TC_FLPM_016(self):
+        test_name = "TC_FLPM_015"
+        print("test_" + test_name)
         driver = self.driver
+        wait = self.wait
 
-        dropdown_locator = (By.ID, "fmFiltStatusPengamanan")
-        dropdown = Select(driver.find_element(*dropdown_locator))
+        def _pre(actual_raw: str) -> str:
+            return actual_raw.strip()
 
-        options_data = []
-        for opt in dropdown.options:
-            val = opt.get_attribute("value")
-            if not val:
-                continue
-            options_data.append((val, (opt.text or "").strip()))
+        def _validator(value: str, label: str, actual: str) -> tuple[bool, str]:
+            sentinel = "/\n/"
+            if value == "1":
+                ok = actual != sentinel
+                return ok, "≠ '/\\n/'"
+            elif value == "2":
+                ok = actual == sentinel
+                return ok, "'/\\n/'"
+            else:
+                ok = actual == label
+                return ok, label
 
-        failed = []
-        test_pass = True
+        run_dropdown_filter_test(
+            driver,
+            wait,
+            dropdown_id="fmFiltStatusPengamanan",
+            cell_col_index=19,
+            test_name=test_name,
+            preprocess_actual=_pre,
+            validator=_validator,
+        )
 
-        for i, (value, label) in enumerate(options_data, start=1):
-            print(f"🔎 Filter ke-{i}: {label} (value={value})")
-
-            Select(driver.find_element(*dropdown_locator)).select_by_value(value)
-
-            old_tbody = driver.find_element(
-                By.XPATH, "//table[@class='koptable']//tbody"
-            )
-
-            button(driver, By.ID, "btTampil")
-
-            try:
-                self.wait.until(EC.staleness_of(old_tbody))
-            except TimeoutException:
-                pass
-
-            self.wait.until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "table.koptable tbody")
-                )
-            )
-
-            try:
-                self.wait.until(
-                    EC.any_of(
-                        EC.presence_of_element_located(
-                            (By.XPATH, "//table[@class='koptable']//tbody//tr[@id]")
-                        ),
-                        EC.presence_of_element_located(
-                            (
-                                By.XPATH,
-                                "//table[@class='koptable']//tbody//tr[td[contains(.,'Total')]]",
-                            )
-                        ),
-                        EC.presence_of_element_located(
-                            (
-                                By.XPATH,
-                                "//*[contains(translate(., 'TIDAK ADA DATA', 'tidak ada data'), 'tidak ada data') or contains(., 'No data')]",
-                            )
-                        ),
-                    )
-                )
-            except TimeoutException:
-                pass
-
-            status_list = driver.find_elements(
-                By.XPATH, "//table[@class='koptable']//tbody//tr[@id]/td[19]"
-            )
-
-            if not status_list:
-                print(f"ℹ️ Tidak ada data untuk filter '{label}'.")
-                continue
-
-            for idx, el in enumerate(status_list, start=1):
-                actual_text = el.text.strip()
-
-                if value == "1":
-                    if actual_text == "/\n/":
-                        failed.append(
-                            {"row": idx, "exp": "≠ '/\\n/'", "act": actual_text}
-                        )
-
-                elif value == "2":
-                    if actual_text != "/\n/":
-                        failed.append(
-                            {"row": idx, "exp": "'/\\n/'", "act": actual_text}
-                        )
-
-                else:
-                    if actual_text != label:
-                        failed.append({"row": idx, "exp": label, "act": actual_text})
-
-        if failed:
-            test_pass = False
-
-        print_result(test_pass, True, "TC_FLPM_016")
-
-        if not test_pass:
-            for f in failed:
-                print(
-                    f"- Gagal di filter [{f['exp']}] baris ke-{f['row']} → Expected: '{f['exp']}', Actual: '{f['act']}'"
-                )
-            print(
-                "========================================================================"
-            )
-        Dropdown(driver, identifier="fmKondisiBarang", value="__reset__")
-
-    def test_TC_FLPM_017(self):
-        test_name = "TC_FLPM_017"
+    def test_TC_FLPM_017(self, test_name="TC_FLPM_017", column=17, line=1):
         print("test_" + test_name)
         tahun_buku_list = [
             "2015",
             "2017",
-            "2025",
+            "2008",
         ]
 
         validate_by_filter_form(
@@ -492,15 +348,16 @@ class TC_FLPM(unittest.TestCase):
             tahun_buku_list,
             test_name,
             "fmTahunBuku",
-            column_idx=17,
+            column_idx=column,
+            line=line,
         )
 
-    def test_TC_FLPM_018(self):
-        print("test_TC_FLPM_018")
+    def test_TC_FLPM_018(self, test_name="TC_FLPM_018", column=9, line=1):
+        print("test_" + test_name)
         driver = self.driver
 
         tahun_perolehans = [
-            ("2015", "2020"),
+            ("2008", "2013"),
             ("2017", "2019"),
             ("2024", "2025"),
         ]
@@ -508,7 +365,7 @@ class TC_FLPM(unittest.TestCase):
         success_cases = 0
         failed = []
 
-        cell_kode_xpath = "./td[9]"
+        cell_kode_xpath = f"./td[{column}]"
 
         for i, (start, end) in enumerate(tahun_perolehans, start=1):
             time.sleep(1)
@@ -522,7 +379,9 @@ class TC_FLPM(unittest.TestCase):
             for idx_row, row in enumerate(rows, start=1):
                 try:
                     td = row.find_element(By.XPATH, cell_kode_xpath)
-                    actual = (td.get_attribute("innerText") or "").strip()
+                    raw = td.get_attribute("innerText") or ""
+                    actual = get_actual_split(raw, line)
+
                 except NoSuchElementException:
                     continue
                 if not (
@@ -779,8 +638,8 @@ class TC_FLPM(unittest.TestCase):
         Dropdown(driver, identifier="fmOrder", value="__reset__")
         clear_readonly_input(self.driver, By.ID, "jmlperpage")
 
-    def test_TC_FLPM_021(self):
-        print("test_TC_FLPM_021")
+    def test_TC_FLPM_021(self, test_name="TC_FLPM_021"):
+        print("test_" + test_name)
         driver = self.driver
 
         per_pages = ["10", "25", "50", "100"]
@@ -841,7 +700,7 @@ class TC_FLPM(unittest.TestCase):
             else:
                 failed.append({"case": i, "exp": f"≤ {expected}", "act": f"{count}"})
 
-        print_result(success_cases, len(per_pages), test_name="TC_FLPM_021")
+        print_result(success_cases, len(per_pages), test_name=test_name)
 
         if failed:
             for f in failed:
@@ -863,7 +722,7 @@ class TC_FLPM(unittest.TestCase):
         total_row_xpath = "//table[@class='koptable']//tbody//tr[td//b[contains(normalize-space(),'Total per Halaman')]]"
         total_cell_xpath = (
             total_row_xpath
-            + "/td[.//b[contains(normalize-space(),'Total per Halaman')]]/following-sibling::td[1]"
+            + "/td[.//b[contains(normalize-space(),'Total per Halamatest_name)]]/following-sibling::td[1]"
         )
         nodata_xpath = (
             "//*[contains(translate(., 'TIDAK ADA DATA', 'tidak ada data'), 'tidak ada data') "
@@ -871,7 +730,6 @@ class TC_FLPM(unittest.TestCase):
         )
 
         def parse_rupiah(s: str) -> int:
-            """Parse angka format ID ('.' ribuan, ',' desimal) ke int rupiah."""
             if not s:
                 return 0
             s = s.strip()
@@ -1030,7 +888,6 @@ class TC_FLPM(unittest.TestCase):
         clear_readonly_input(driver, By.ID, "fmTahunPerolehanAwal")
         clear_readonly_input(driver, By.ID, "fmTahunPerolehanAkhir")
 
-    #
     def test_TC_FLPM_024(self):
         print("test_TC_FLPM_024")
         self.test_TC_FLPM_001()
@@ -1077,6 +934,10 @@ def validate_by_filter_form(
     for i, expected in enumerate(values_to_check, start=1):
         filter_pengamanan(driver, expected, filter_form)
         rows = get_table_rows(wait, driver)
+        if not rows:
+            print(f"ℹ️ Filter '{expected}': tidak ada data ditemukan.")
+        else:
+            print(f"✅ Filter '{expected}': {len(rows)} baris data ditemukan.")
 
         mismatches = []
         for r_idx, row in enumerate(rows, start=1):
@@ -1141,6 +1002,111 @@ def is_found(actual: str | None, name: str | None, exact: bool = False) -> bool:
         return actual_clean == name_clean
     else:
         return name_clean in actual_clean
+
+
+def _iter_dropdown_options(driver, dropdown_locator):
+    dropdown = Select(driver.find_element(*dropdown_locator))
+    data = []
+    for opt in dropdown.options:
+        val = opt.get_attribute("value")
+        if not val:
+            continue
+        data.append((val, (opt.text or "").strip()))
+    return data
+
+
+def _select_and_reload_table(driver, wait, dropdown_locator, value_to_select):
+    Select(driver.find_element(*dropdown_locator)).select_by_value(value_to_select)
+    try:
+        old_tbody = driver.find_element(By.XPATH, DATA_ROW_XPATH)
+    except Exception:
+        old_tbody = None
+
+    button(driver, By.ID, "btTampil")
+
+    try:
+        if old_tbody:
+            wait.until(EC.staleness_of(old_tbody))
+    except TimeoutException:
+        pass
+
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, TBODY_CSS)))
+
+    try:
+        wait.until(
+            EC.any_of(
+                EC.presence_of_element_located((By.XPATH, DATA_ROW_XPATH)),
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        "//table[@class='koptable']//tbody//tr[td[contains(.,'Total')]]",
+                    )
+                ),
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        "//*[contains(translate(., 'TIDAK ADA DATA', 'tidak ada data'), 'tidak ada data') or contains(., 'No data')]",
+                    )
+                ),
+            )
+        )
+    except TimeoutException:
+        pass
+
+
+def run_dropdown_filter_test(
+    driver,
+    wait,
+    *,
+    dropdown_id: str,
+    cell_col_index: int,
+    test_name: str,
+    preprocess_actual: Callable[[str], str] | None = None,
+    validator: Callable[[str, str, str], tuple[bool, str]] | None = None,
+):
+    dropdown_locator = (By.ID, dropdown_id)
+    options_data = _iter_dropdown_options(driver, dropdown_locator)
+
+    failed = []
+    test_pass = True
+
+    for i, (value, label) in enumerate(options_data, start=1):
+        print(f"🔎 Filter ke-{i}: {label} (value={value})")
+
+        _select_and_reload_table(driver, wait, dropdown_locator, value)
+
+        cells = driver.find_elements(By.XPATH, f"{DATA_ROW_XPATH}/td[{cell_col_index}]")
+
+        if not cells:
+            print(f"ℹ️ Tidak ada data untuk filter '{label}'.")
+            continue
+
+        for idx, el in enumerate(cells, start=1):
+            raw = (el.text or "").strip()
+            actual = preprocess_actual(raw) if preprocess_actual else raw
+
+            if validator:
+                ok, expected_desc = validator(value, label, actual)
+            else:
+                ok = actual == label
+                expected_desc = label
+            if not ok:
+                failed.append({"row": idx, "exp": expected_desc, "act": actual})
+
+    if failed:
+        test_pass = False
+
+    print_result(test_pass, True, test_name)
+
+    if not test_pass:
+        for f in failed:
+            print(
+                f"- Gagal di filter [{f['exp']}] baris ke-{f['row']} → Expected: '{f['exp']}', Actual: '{f['act']}'"
+            )
+        print("=" * 72)
+
+    if dropdown_id:
+        Dropdown(driver, identifier=dropdown_id, value="__reset__")
 
 
 def filter_range(driver, start, locator_start, end, locator_end):
