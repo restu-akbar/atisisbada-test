@@ -113,16 +113,27 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         Dropdown(driver, "trans", "2")
         time.sleep(1)
-        Dropdown(driver, "kondisi_baru", "2")
+        
+        # biar lebih robust
+        kondisi_text = driver.find_element(
+            By.CSS_SELECTOR,
+            "#areakondisi > table > tbody > tr > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td:nth-child(3)"
+        ).text.strip()
+                
+        if kondisi_text == "Baik":
+            Dropdown(driver, "kondisi_baru", "2")
+        else:
+            Dropdown(driver, "kondisi_baru", "1")
+            
         time.sleep(1)
         form_input(driver, By.ID, "ket_kondisi", "penurunan nilai barang")
         time.sleep(1)
         button(driver, By.ID, "btsave")
         time.sleep(1)
-        self.alert_helper("TC_PNPT_003")
+        save_get_alert(driver,expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!", test_name="TC_PNPT__003",with_button=False)
 
     @unittest.skip("untuk testing")
-    def test_TC_PNPT_004(self):
+    def test_TC_PNPT_004(self): # harus menggunakan 152429 akun sulthan
         print("test_TC_PNPT_004")
         driver = self.driver
         time.sleep(1)
@@ -134,7 +145,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         button(driver, By.ID, "btsave")
         time.sleep(1)
-        self.alert_helper("TC_PNPT_004")
+        save_get_alert(driver,expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!", test_name="TC_PNPT",with_button=False)
 
     @unittest.skip("untuk testing")
     def test_TC_PNPT_005(self):
@@ -147,7 +158,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         button(driver, By.XPATH, "//input[@value='CARI BARANG']")
         time.sleep(1)
-        form_input(driver, By.ID, "IDBARANG", "167192")
+        form_input(driver, By.ID, "IDBARANG", "5241695")#akun sulthan
         time.sleep(1)
         button(driver, By.ID, "btTampil")
         time.sleep(1)
@@ -156,7 +167,35 @@ class TC_PNPT(unittest.TestCase):
         form_input(driver, By.ID, "ket_gabung", "testing")
         time.sleep(1)
         button(driver, By.ID, "btsave")
-        self.alert_helper("TC_PNPT_005")
+        save_get_alert(driver,expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!", test_name="TC_PNPT_005",with_button=False)
+        
+    @unittest.skip("untuk testing")
+    def test_TC_PNPT_006(self):
+        print("test_TC_PNPT_006")
+        driver = self.driver
+        time.sleep(1)
+        form_input(driver, By.ID, "no_bast", "05/BAST/2025")
+        time.sleep(1)
+        Dropdown(driver, "trans", "6")
+        time.sleep(1)
+        button(driver, By.CSS_SELECTOR, "#areagabung > table > tbody > tr > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(3) > input[type=button]:nth-child(2)")
+        time.sleep(1)
+        form_input(driver, By.ID, "IDBARANG", "16815")#akun sulthan
+        time.sleep(1)
+        button(driver, By.ID, "btTampil")
+        time.sleep(1)
+        button(driver, By.XPATH, '//table[@class="koptable"]/tbody/tr[1]/td[2]/a')
+        time.sleep(1)
+        form_input(driver, By.ID, "ket_gabung", "testing penggabungan")
+        time.sleep(1)
+        button(driver, By.ID, "btsave")
+        save_get_alert(
+            driver,
+            expected=f"NIBAR {TC_PNPT.nibar} masih dalam pengamanan penggunaan, harus pengembalian!",
+            test_name="TC_PNPT_006",
+            with_button=False
+        )
+        
 
     @unittest.skip("untuk testing")
     def test_TC_PNPT_007(self):
@@ -178,7 +217,7 @@ class TC_PNPT(unittest.TestCase):
         form_input(driver, By.ID, "ket_updtKdBrg", "testing")
         time.sleep(1)
         button(driver, By.ID, "btsave")
-        self.alert_helper("TC_PNPT_007")
+        save_get_alert(driver,expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!", test_name="TC_PNPT_007",with_button=False)
 
     @unittest.skip("untuk testing")
     def test_TC_PNPT_008(self):
@@ -193,7 +232,56 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         button(driver, By.ID, "btsave")
         time.sleep(1)
-        self.alert_helper("TC_PNPT_008")
+        save_get_alert(driver,expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!", test_name="TC_PNPT_008",with_button=False)
+        
+    @unittest.skip("untuk testing")
+    def test_TC_PNPT_009(self):
+        print("test_TC_PNPT_009")
+        driver = self.driver
+        time.sleep(1)
+        form_input(driver, By.ID, "no_bast", "05/BAST/2025")
+        time.sleep(1)
+        Dropdown(driver, "trans", "6")
+        time.sleep(1)
+        button(driver, By.CSS_SELECTOR, "#areagabung > table > tbody > tr > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(3) > input[type=button]:nth-child(2)")
+        time.sleep(1)
+        form_input(driver, By.ID, "IDBARANG", "16814")#Karena yang induk nya yang di jadikan target ini jadi terbalik env nibar = 16815(yang pengamanan)
+        time.sleep(1)
+        button(driver, By.ID, "btTampil")
+        time.sleep(1)
+        button(driver, By.XPATH, '//table[@class="koptable"]/tbody/tr[1]/td[2]/a')
+        time.sleep(1)
+        form_input(driver, By.ID, "ket_gabung", "testing penggabungan")
+        time.sleep(1)
+        button(driver, By.ID, "btsave")
+        save_get_alert(
+            driver,
+            expected=f"Data berhasil di simpan !",
+            test_name="TC_PNPT_009",
+            with_button=False
+        )
+        
+    @unittest.skip("untuk testing")
+    def test_TC_PNPT_010(self):
+        print("test_TC_PNPT_010")
+        driver = self.driver
+        time.sleep(1)
+        form_input(driver, By.ID, "no_bast", "05/BAST/2025")
+        time.sleep(1)
+        Dropdown(driver, "trans", "5")
+        time.sleep(1)
+        button(driver, By.XPATH, "//input[@value='CARI BARANG']")
+        time.sleep(1)
+        form_input(driver, By.ID, "IDBARANG", "16814")#akun sulthan mini bus dengan env nibar 24959000 ( sama kasus nya dengan 009, 16814 adalah induk nya jadi yang terhapus adalah 24959000)
+        time.sleep(1)
+        button(driver, By.ID, "btTampil")
+        time.sleep(1)
+        button(driver, By.XPATH, '//table[@class="koptable"]/tbody/tr[1]/td[2]/a')
+        time.sleep(1)
+        form_input(driver, By.ID, "ket_gabung", "testing")
+        time.sleep(1)
+        button(driver, By.ID, "btsave")
+        save_get_alert(driver,expected="Data berhasil di simpan !", test_name="TC_PNPT_010",with_button=False)
 
     @unittest.skip("untuk testing")
     def test_TC_PNPT_011(self):
@@ -210,7 +298,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         button(driver, By.ID, "btsave")
         time.sleep(1)
-        self.alert_helper("TC_PNPT_011")
+        save_get_alert(driver,expected="Data berhasil di simpan", test_name="TC_PNPT_011",with_button=False)
 
     @unittest.skip("untuk testing")
     def test_TC_PNPT_012(self):
@@ -226,8 +314,9 @@ class TC_PNPT(unittest.TestCase):
         button(driver, By.XPATH, '//table[@class="koptable"]/tbody/tr[1]/td[2]/a')
         time.sleep(1)
         button(driver, By.ID, "btsave")
-        self.alert_helper("TC_PNPT_012")
+        save_get_alert(driver,expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!", test_name="TC_PNPT_012",with_button=False)
 
+    @unittest.skip("untuk testing")
     def test_TC_PNPT_013(self):
         print("test_TC_PNPT_013")
         driver = self.driver
@@ -252,7 +341,7 @@ class TC_PNPT(unittest.TestCase):
         form_input(driver, By.ID, "ket", "testing")
         time.sleep(1)
         button(driver, By.ID, "btsave")
-        self.alert_helper("TC_PNPT_013")
+        save_get_alert(driver,expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!", test_name="TC_PNPT_013",with_button=False)
 
     def alert_helper(self, testCase):
         try:
