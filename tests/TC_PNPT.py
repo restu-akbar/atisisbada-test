@@ -39,14 +39,14 @@ class TC_PNPT(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        #         try:
-        #             logout(cls.driver)
-        #         except Exception as e:
-        #             print(f"⚠️ Logout gagal: {e}")
-        #         finally:
-        #             cls.driver.quit()
-        #
-        cls.driver.quit()
+        try:
+            logout(cls.driver)
+        except Exception as e:
+            print(f"⚠️ Logout gagal: {e}")
+        finally:
+            cls.driver.quit()
+        
+        # cls.driver.quit()
 
     def setUp(self):
         driver = self.driver
@@ -69,7 +69,7 @@ class TC_PNPT(unittest.TestCase):
                 "test_TC_PNPT_021": "javascript:kondisi_ins.kondisibaru()",
                 "test_TC_PNPT_022": "javascript:reclass_persediaan.Baru()",
                 "test_TC_PNPT_023": "javascript:updatebarang.showFormUbahKondisi('cidBI[]',1)",
-                "test_TC_PNPT_024": "javascript:updatebarang.showFormUbahKondisi('cidBI[]',1)",
+                "test_TC_PNPT_024": "javascript:AsetLainLain.fmReklas('cidBI[]',1)",
             }
 
             if self._testMethodName in actions:
@@ -86,7 +86,10 @@ class TC_PNPT(unittest.TestCase):
                     time.sleep(1)
                     alert.accept()
                     time.sleep(1)
-
+            else:
+                href_button(self.driver, "javascript:updatebarang.formUpdate()")
+                time.sleep(1)
+                
             handles = self.driver.window_handles
             if len(handles) > 1:
                 self.driver.switch_to.window(handles[-1])
@@ -150,7 +153,7 @@ class TC_PNPT(unittest.TestCase):
     def test_TC_PNPT_003(self):
         print("test_TC_PNPT_003")
         driver = self.driver
-        time.sleep(1)
+        time.sleep(2)
         form_input(driver, By.ID, "no_bast", "05/BAST/2025")
         time.sleep(1)
         Dropdown(driver, "trans", "2")
@@ -182,7 +185,7 @@ class TC_PNPT(unittest.TestCase):
     def test_TC_PNPT_004(self):
         print("test_TC_PNPT_004")
         driver = self.driver
-        time.sleep(1)
+        time.sleep(2)
         form_input(driver, By.ID, "no_bast", "05/BAST/2025")
         time.sleep(1)
         Dropdown(driver, "trans", "3")
@@ -223,12 +226,11 @@ class TC_PNPT(unittest.TestCase):
             test_name="TC_PNPT_005",
             with_button=False,
         )
-
-    @unittest.skip("untuk testing")
+        
     def test_TC_PNPT_006(self):
         print("test_TC_PNPT_006")
         driver = self.driver
-        time.sleep(1)
+        time.sleep(2)
         form_input(driver, By.ID, "no_bast", "05/BAST/2025")
         time.sleep(1)
         Dropdown(driver, "trans", "6")
@@ -258,7 +260,7 @@ class TC_PNPT(unittest.TestCase):
     def test_TC_PNPT_007(self):
         print("test_TC_PNPT_007")
         driver = self.driver
-        time.sleep(1)
+        time.sleep(2)
         form_input(driver, By.ID, "no_bast", "07/BAST/2025")
         time.sleep(1)
         Dropdown(driver, "trans", "8")
@@ -284,7 +286,7 @@ class TC_PNPT(unittest.TestCase):
     def test_TC_PNPT_008(self):
         print("test_TC_PNPT_008")
         driver = self.driver
-        time.sleep(1)
+        time.sleep(2)
         form_input(driver, By.ID, "no_bast", "05/BAST/2025")
         time.sleep(1)
         Dropdown(driver, "trans", "9")
@@ -534,7 +536,7 @@ class TC_PNPT(unittest.TestCase):
         Dropdown(driver, "fkondisi", "2")
         time.sleep(1)
         button(driver, By.ID, "btProses")
-        self.errmsg_helper(tc, "updatebarang_TextMsg")
+        self.alert_helper(tc)
 
     def test_TC_PNPT_024(self):
         driver = self.driver
@@ -545,7 +547,10 @@ class TC_PNPT(unittest.TestCase):
         Dropdown(driver, "fkategori", "2")
         time.sleep(1)
         button(driver, By.ID, "btProses")
-        self.errmsg_helper(tc, "AsetLainLain_TextMsg")
+        self.alert_helper(tc)
+        alert = self.wait.until(EC.alert_is_present())
+        if alert:
+            alert.accept()
 
     def alert_helper(
         self,
@@ -564,6 +569,7 @@ class TC_PNPT(unittest.TestCase):
             print_result(False, True, testCase)
 
     def errmsg_helper(self, testCase, errMsgId="errmsg"):
+        time.sleep(5)
         try:
             textarea = self.wait.until(
                 EC.presence_of_element_located((By.ID, errMsgId))
