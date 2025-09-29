@@ -69,7 +69,7 @@ class TC_PNPT(unittest.TestCase):
                 "test_TC_PNPT_021": "javascript:kondisi_ins.kondisibaru()",
                 "test_TC_PNPT_022": "javascript:reclass_persediaan.Baru()",
                 "test_TC_PNPT_023": "javascript:updatebarang.showFormUbahKondisi('cidBI[]',1)",
-                "test_TC_PNPT_024": "javascript:AsetLainLain.fmReklas('cidBI[]',1)",
+                "test_TC_PNPT_024": 'javascript:AsetLainLain.fmReklas("cidBI[]",1)',
             }
 
             if self._testMethodName in actions:
