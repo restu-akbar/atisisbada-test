@@ -7,6 +7,7 @@ from components.dropdown import Dropdown
 from components.form_input import form_input
 from components.button import button
 from components.checkbox import checkbox
+from helpers import print_result
 from helpers.filter_nibar import filter_nibar_pembukuan
 from components.href_button import href_button
 from helpers.driver_setup import create_driver
@@ -75,7 +76,7 @@ class TC_MUTASI_PENGHAPUSAN_SEBAGIAN(unittest.TestCase):
         except Exception as e:
             print(f"[⚠️] Gagal menutup tab atau berpindah: {e}")
 
-    #@unittest.skip("test")
+    # @unittest.skip("test")
     def test_TC_MUTASI_PENGHAPUSAN_SEBAGIAN_001(self):
         print("test_TC_MUTASI_PENGHAPUSAN_SEBAGIAN_001")
         driver = self.driver
@@ -158,18 +159,14 @@ class TC_MUTASI_PENGHAPUSAN_SEBAGIAN(unittest.TestCase):
         time.sleep(2)
         href_button(driver, "javascript:HapusSebagianHapus.Hapus()")
         time.sleep(2)
-        alert = Alert(driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
         
         # tidak ada alert?
-        # save_get_alert(
-        #     driver,
-        #     expected="Sukses Hapus Data",
-        #     with_button=False,
-        #     test_name="TC_MUTASI_PENGHAPUSAN_SEBAGIAN_003",
-        # )
+        save_get_alert(
+            driver,
+            expected="Yakin 1 data akan di hapus?",
+            with_button=False,
+            test_name="TC_MUTASI_PENGHAPUSAN_SEBAGIAN_003",
+        )
 
 if __name__ == "__main__":
     unittest.main()

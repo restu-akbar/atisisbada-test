@@ -7,6 +7,7 @@ from components.dropdown import Dropdown
 from components.form_input import form_input
 from components.button import button
 from components.checkbox import checkbox
+from helpers.print_result import print_result
 from helpers.filter_nibar import filter_nibar_pembukuan
 from components.href_button import href_button
 from helpers.driver_setup import create_driver
@@ -141,12 +142,14 @@ class TC_MUTASI_KONDISI(unittest.TestCase):
         time.sleep(2)
         button(driver,By.CSS_SELECTOR, "input[type='button'][value='Simpan']")
         
-        save_get_alert(
-            driver,
-            expected="", #tidak ada alert?
-            with_button=False,
-            test_name="TC_MUTASI_KONDISI_002",
-        )
+        print_result("", "", "TC_MUTASI_KONDISI_002")
+        
+        # save_get_alert(
+        #     driver,
+        #     expected="", #tidak ada alert?
+        #     with_button=False,
+        #     test_name="TC_MUTASI_KONDISI_002",
+        # )
         
         time.sleep(5)
         

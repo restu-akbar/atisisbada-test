@@ -114,7 +114,7 @@ class TC_MUTASI_KOREKSI_HARGA(unittest.TestCase):
         
         TC_MUTASI_KOREKSI_HARGA.switch_to_main_window(driver) 
             
-    @unittest.skip("Bug")
+    # @unittest.skip("Bug")
     def test_TC_MUTASI_KOREKSI_HARGA_002(self):
         print("test_TC_MUTASI_KOREKSI_HARGA_002")
         driver = self.driver
