@@ -75,7 +75,6 @@ class TC_PNED(unittest.TestCase):
         except Exception:
             pass
 
-    #     @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNED_001(self):
         print("test_TC_PNED_001")
         driver = self.driver
@@ -284,9 +283,6 @@ class TC_PNED(unittest.TestCase):
 
         recover_if_failed(tc_pbnr.test_TC_PNBR_013(True))
 
-    #         recover_if_failed(tc_pbnr.test_TC_PNBR_015(True))
-
-    #     @unittest.skip("Belum mau dijalankan sekarang")
     def test_TC_PNED_003(self):
         print("TC_PNED_003")
         data = self.__class__.shared

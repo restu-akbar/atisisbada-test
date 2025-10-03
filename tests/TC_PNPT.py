@@ -39,14 +39,14 @@ class TC_PNPT(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        try:
-            logout(cls.driver)
-        except Exception as e:
-            print(f"⚠️ Logout gagal: {e}")
-        finally:
-            cls.driver.quit()
-        
-        # cls.driver.quit()
+        #         try:
+        #             logout(cls.driver)
+        #         except Exception as e:
+        #             print(f"⚠️ Logout gagal: {e}")
+        #         finally:
+        #             cls.driver.quit()
+        #
+        cls.driver.quit()
 
     def setUp(self):
         driver = self.driver
@@ -68,7 +68,7 @@ class TC_PNPT(unittest.TestCase):
                 "test_TC_PNPT_020": "javascript:kapitalisasi_ins.kapitalisasibaru()",
                 "test_TC_PNPT_021": "javascript:kondisi_ins.kondisibaru()",
                 "test_TC_PNPT_022": "javascript:reclass_persediaan.Baru()",
-                "test_TC_PNPT_023": "javascript:updatebarang.showFormUbahKondisi('cidBI[]',1)",
+                "test_TC_PNPT_023": 'javascript:updatebarang.showFormUbahKondisi("cidBI[]",0)',
                 "test_TC_PNPT_024": 'javascript:AsetLainLain.fmReklas("cidBI[]",1)',
             }
 
@@ -89,7 +89,7 @@ class TC_PNPT(unittest.TestCase):
             else:
                 href_button(self.driver, "javascript:updatebarang.formUpdate()")
                 time.sleep(1)
-                
+
             handles = self.driver.window_handles
             if len(handles) > 1:
                 self.driver.switch_to.window(handles[-1])
@@ -226,7 +226,7 @@ class TC_PNPT(unittest.TestCase):
             test_name="TC_PNPT_005",
             with_button=False,
         )
-        
+
     def test_TC_PNPT_006(self):
         print("test_TC_PNPT_006")
         driver = self.driver
@@ -302,7 +302,6 @@ class TC_PNPT(unittest.TestCase):
             with_button=False,
         )
 
-    @unittest.skip("untuk testing")
     def test_TC_PNPT_009(self):
         print("test_TC_PNPT_009")
         driver = self.driver
@@ -335,7 +334,6 @@ class TC_PNPT(unittest.TestCase):
             with_button=False,
         )
 
-    @unittest.skip("untuk testing")
     def test_TC_PNPT_010(self):
         print("test_TC_PNPT_010")
         driver = self.driver
@@ -401,7 +399,6 @@ class TC_PNPT(unittest.TestCase):
             with_button=False,
         )
 
-    @unittest.skip("untuk testing")
     def test_TC_PNPT_013(self):
         tc = "TC_PNPT_013"
         print(f"test_{tc}")
@@ -428,7 +425,10 @@ class TC_PNPT(unittest.TestCase):
     def test_TC_PNPT_015(self):
         tc = "TC_PNPT_015"
         print(f"test_{tc}")
-        self.alert_helper(tc)
+        self.alert_helper(
+            tc,
+            f"NIBAR {self.nibar} masih dalam pengamanan penggunaan, harus pengembalian!",
+        )
 
     def test_TC_PNPT_016(self):
         driver = self.driver
@@ -437,19 +437,22 @@ class TC_PNPT(unittest.TestCase):
         form_input(driver, By.ID, "fmnomor", "tes")
         print(f"test_{tc}")
         button(driver, By.XPATH, "//input[@type='button' and @value='Simpan']")
-        self.alert_helper(tc)
+        self.alert_helper(
+            tc,
+            f"NIBAR {self.nibar} masih dalam pengamanan penggunaan, harus pengembalian!",
+        )
 
     def test_TC_PNPT_017(self):
         driver = self.driver
         tc = "TC_PNPT_017"
         print(f"test_{tc}")
         today = datetime.now(ZoneInfo("Asia/Jakarta")).date()
-        tgl_str = f"{today.day:02d}"  # contoh: "07"
+        tgl_str = f"{today.day}"  # contoh: "07"
         bln_str = f"{today.month:02d}"  # contoh: "09"
         thn_str = str(today.year)  # contoh: "2025"
 
         end_dt = add_one_month_safe(today)
-        end_tgl_str = f"{end_dt.day:02d}"
+        end_tgl_str = f"{end_dt.day}"
         end_bln_str = f"{end_dt.month:02d}"
         end_thn_str = str(end_dt.year)
 
@@ -476,7 +479,7 @@ class TC_PNPT(unittest.TestCase):
         form_input(driver, By.ID, "fmTANGGALPEMANFAATAN_akhir_thn", end_thn_str)
         time.sleep(1)
         button(driver, By.ID, "btSimpan")
-        self.alert_helper(tc)
+        self.errmsg_helper(tc, "fmErrMsg")
 
     def test_TC_PNPT_018(self):
         driver = self.driver
@@ -522,7 +525,9 @@ class TC_PNPT(unittest.TestCase):
         driver = self.driver
         tc = "TC_PNPT_022"
         print(f"test_{tc}")
-        form_input(driver, By.ID, "no_sk", "tes")
+        form_input(driver, By.ID, "no_bast", "tes")
+        time.sleep(1)
+        form_input(driver, By.ID, "uraian", "tes")
         time.sleep(1)
         href_button(driver, "javascript:reclass_persediaan.Simpan()")
         self.errmsg_helper(tc)
@@ -533,10 +538,13 @@ class TC_PNPT(unittest.TestCase):
         print(f"test_{tc}")
         form_input(driver, By.ID, "fnoba", "tes")
         time.sleep(1)
-        Dropdown(driver, "fkondisi", "2")
+        Dropdown(driver, "fkondisi", value=2)
         time.sleep(1)
         button(driver, By.ID, "btProses")
-        self.alert_helper(tc)
+        alert = self.wait.until(EC.alert_is_present())
+        if alert:
+            alert.accept()
+        self.errmsg_helper(tc, "updatebarang_TextMsg")
 
     def test_TC_PNPT_024(self):
         driver = self.driver
@@ -544,13 +552,13 @@ class TC_PNPT(unittest.TestCase):
         print(f"test_{tc}")
         form_input(driver, By.ID, "fnoba", "tes")
         time.sleep(1)
-        Dropdown(driver, "fkategori", "2")
+        Dropdown(driver, "fkategori", value=2)
         time.sleep(1)
         button(driver, By.ID, "btProses")
-        self.alert_helper(tc)
         alert = self.wait.until(EC.alert_is_present())
         if alert:
             alert.accept()
+        self.errmsg_helper(tc, "AsetLainLain_TextMsg")
 
     def alert_helper(
         self,
@@ -568,8 +576,12 @@ class TC_PNPT(unittest.TestCase):
         except TimeoutException:
             print_result(False, True, testCase)
 
-    def errmsg_helper(self, testCase, errMsgId="errmsg"):
-        time.sleep(5)
+    def errmsg_helper(self, testCase, errMsgId="errmsg", alert=True):
+        if alert:
+            alert = self.wait.until(EC.alert_is_present())
+            if alert:
+                alert.accept()
+        time.sleep(3)
         try:
             textarea = self.wait.until(
                 EC.presence_of_element_located((By.ID, errMsgId))
@@ -579,7 +591,7 @@ class TC_PNPT(unittest.TestCase):
 
             print_result(actual, True, testCase)
         except TimeoutException:
-            self.fail("[❌] Textarea dengan id 'errmsg' tidak ditemukan dalam 10 detik")
+            self.fail("[❌] Textarea dengan id 'errmsg' tidak ditemukan")
 
 
 def add_one_month_safe(dt: date) -> date:

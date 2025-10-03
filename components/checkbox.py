@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
     ElementClickInterceptedException,
     TimeoutException,
+    StaleElementReferenceException,
 )
 
 
@@ -19,71 +20,120 @@ def checkbox(
 ) -> None:
     wait = WebDriverWait(driver, timeout)
 
+    # --- Build locator / selector ---
     locator: Optional[Tuple[str, str]] = None
-    el: WebElement
+    selector: Optional[str] = None
 
     if by == "id":
         locator = (By.ID, str(identifier))
-        el = wait.until(EC.presence_of_element_located(locator))
     elif by == "index":
         selector = "input[type='checkbox']"
         if table_selector:
             selector = f"{table_selector} {selector}"
-        boxes = wait.until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
-        )
-        if identifier >= len(boxes):
-            raise IndexError(
-                f"Hanya ada {len(boxes)} checkbox, index {identifier} tidak tersedia."
-            )
-        el = boxes[identifier]
     else:
         raise ValueError("Parameter 'by' harus 'id' atau 'index'.")
 
-    if (
-        el.tag_name.lower() == "input"
-        and el.get_attribute("type") == "checkbox"
-        and not el.is_displayed()
-    ):
-        el_id = el.get_attribute("id")
-        if el_id:
-            label = driver.find_element(By.CSS_SELECTOR, f'label[for="{el_id}"]')
-            driver.execute_script(
-                "arguments[0].scrollIntoView({block:'center', inline:'center'});", label
-            )
-            wait.until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, f'label[for="{el_id}"]'))
-            )
-            label.click()
+    def fetch_el() -> WebElement:
+        if locator:
+            wait.until(EC.presence_of_element_located(locator))
+            return driver.find_element(*locator)
+        else:
+            assert selector is not None
+
+            def list_has_index(drv: WebDriver) -> bool:
+                els = drv.find_elements(By.CSS_SELECTOR, selector)
+                return len(els) > int(identifier)
+
+            wait.until(list_has_index)
+            return driver.find_elements(By.CSS_SELECTOR, selector)[int(identifier)]
+
+    def try_click_via_label(el: WebElement) -> bool:
+        try:
+            if (
+                el.tag_name.lower() == "input"
+                and el.get_attribute("type") == "checkbox"
+                and not el.is_displayed()
+            ):
+                el_id = el.get_attribute("id")
+                if el_id:
+                    label_loc = (By.CSS_SELECTOR, f'label[for="{el_id}"]')
+                    lab = wait.until(EC.element_to_be_clickable(label_loc))
+                    driver.execute_script(
+                        "arguments[0].scrollIntoView({block:'center', inline:'center'});",
+                        lab,
+                    )
+                    lab.click()
+                    return True
+        except StaleElementReferenceException:
+            pass
+        return False
+
+    def wait_not_covered(el_supplier) -> None:
+        def _ok(_):
+            try:
+                el = el_supplier()
+                return driver.execute_script(
+                    """
+                    const el = arguments[0];
+                    if (!el || !el.isConnected) return false;
+                    const r = el.getBoundingClientRect();
+                    const x = Math.floor(r.left + r.width/2);
+                    const y = Math.floor(r.top + r.height/2);
+                    const e = document.elementFromPoint(x, y);
+                    return e === el || el.contains(e);
+                    """,
+                    el,
+                )
+            except StaleElementReferenceException:
+                return False
+
+        wait.until(_ok)
+
+    last_err = None
+    for _ in range(3):
+        try:
+            el = fetch_el()
+
+            if try_click_via_label(el):
+                return
+
+            try:
+                driver.execute_script(
+                    "arguments[0].scrollIntoView({block:'center', inline:'center'});",
+                    el,
+                )
+            except StaleElementReferenceException:
+                continue
+
+            wait_not_covered(fetch_el)
+
+            if locator:
+                wait.until(EC.element_to_be_clickable(locator))
+                el = fetch_el()
+            else:
+
+                def is_clickable(_):
+                    try:
+                        e = fetch_el()
+                        return e.is_displayed() and e.is_enabled()
+                    except StaleElementReferenceException:
+                        return False
+
+                wait.until(is_clickable)
+                el = fetch_el()
+
+            try:
+                el.click()
+            except (ElementClickInterceptedException, StaleElementReferenceException):
+                try:
+                    driver.execute_script("arguments[0].click();", fetch_el())
+                except StaleElementReferenceException:
+                    continue
             return
 
-    driver.execute_script(
-        "arguments[0].scrollIntoView({block:'center', inline:'center'});", el
-    )
+        except (StaleElementReferenceException, TimeoutException) as e:
+            last_err = e
+            continue
 
-    def not_covered(drv: WebDriver) -> bool:
-        return drv.execute_script(
-            """
-            const el = arguments[0];
-            const r = el.getBoundingClientRect();
-            const x = Math.floor(r.left + r.width/2);
-            const y = Math.floor(r.top + r.height/2);
-            const e = document.elementFromPoint(x, y);
-            return e === el || el.contains(e);
-        """,
-            el,
-        )
-
-    wait.until(lambda d: not_covered(d))
-
-    if locator is not None:
-        wait.until(EC.element_to_be_clickable(locator))
-    else:
-        wait.until(EC.element_to_be_clickable(el))
-
-    try:
-        el.click()
-    except ElementClickInterceptedException:
-        driver.execute_script("arguments[0].click();", el)
-    except TimeoutException:
-        driver.execute_script("arguments[0].click();", el)
+    if last_err:
+        raise last_err
