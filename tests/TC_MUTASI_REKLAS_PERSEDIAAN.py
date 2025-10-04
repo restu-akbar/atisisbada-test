@@ -126,7 +126,7 @@ class TC_MUTASI_REKLAS_PERSEDIAAN(unittest.TestCase):
         )
         self._return_to_main_and_close_extras()
 
-    def test_TC_MUTASI_REKLAS_PERSEDIAAN_003(self):
+    def test_TC_MUTASI_REKLAS_PERSEDIAAN_002(self):
         driver = self.driver
         time.sleep(1)
         href_button(driver, "javascript:Penghapusan_Hapus()")
@@ -136,7 +136,7 @@ class TC_MUTASI_REKLAS_PERSEDIAAN(unittest.TestCase):
         print_result(
             alert_text,
             "Data sukses di batalkan",
-            test_name="TC_MUTASI_REKLAS_PERSEDIAAN_003",
+            test_name="TC_MUTASI_REKLAS_PERSEDIAAN_002",
         )
         self._return_to_main_and_close_extras()
 

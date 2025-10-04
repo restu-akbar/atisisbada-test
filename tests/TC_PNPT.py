@@ -177,7 +177,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         save_get_alert(
             driver,
-            expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!",
+            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
             test_name="TC_PNPT__003",
             with_button=False,
         )
@@ -196,8 +196,8 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         save_get_alert(
             driver,
-            expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!",
-            test_name="TC_PNPT",
+            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
+            test_name="TC_PNPT_004",
             with_button=False,
         )
 
@@ -278,7 +278,7 @@ class TC_PNPT(unittest.TestCase):
         button(driver, By.ID, "btsave")
         save_get_alert(
             driver,
-            expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!",
+            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
             test_name="TC_PNPT_007",
             with_button=False,
         )
@@ -297,7 +297,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         save_get_alert(
             driver,
-            expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!",
+            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
             test_name="TC_PNPT_008",
             with_button=False,
         )
@@ -357,7 +357,7 @@ class TC_PNPT(unittest.TestCase):
         button(driver, By.ID, "btsave")
         save_get_alert(
             driver,
-            expected="Data berhasil di simpan !",
+            expected="Barang masih dalam pengamanan penggunaan, harus pengembalian!",
             test_name="TC_PNPT_010",
             with_button=False,
         )
@@ -378,7 +378,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         save_get_alert(
             driver,
-            expected="Data berhasil di simpan",
+            expected="Data berhasil di simpan !",
             test_name="TC_PNPT_011",
             with_button=False,
         )

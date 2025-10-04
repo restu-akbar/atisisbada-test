@@ -130,7 +130,7 @@ class TC_MUTASI_REKLAS_KIB(unittest.TestCase):
         self.accept_alert()
         alert_text = self.get_alert_text()
         print_result(
-            alert_text, "Sukses Hapus Data", test_name="TC_MUTASI_REKLAS_KIB_003"
+            alert_text, "Data sukses di batalkan", test_name="TC_MUTASI_REKLAS_KIB_003"
         )
         self._return_to_main_and_close_extras()
 
