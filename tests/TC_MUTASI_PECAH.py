@@ -20,7 +20,7 @@ from pages.login_page import LoginPage
 import time
 
 
-class TC_MUTASI_REKLAS_PECAH(unittest.TestCase):
+class TC_MUTASI_PECAH(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.driver, cls.wait, cls.url = create_driver()
@@ -29,7 +29,7 @@ class TC_MUTASI_REKLAS_PECAH(unittest.TestCase):
         user = os.getenv("user")
         password = os.getenv("password")
         LoginPage(cls.driver).login(user, password)
-        TC_MUTASI_REKLAS_PECAH.nibar = os.getenv("nibar")
+        TC_MUTASI_PECAH.nibar = os.getenv("nibar")
         cls.main_window = cls.driver.current_window_handle
         time.sleep(3)
 
@@ -94,7 +94,7 @@ class TC_MUTASI_REKLAS_PECAH(unittest.TestCase):
         self.__class__._ensure_focus_on_open_window()
 
         driver = self.driver
-        if self._testMethodName == "test_TC_MUTASI_REKLAS_PECAH_001":
+        if self._testMethodName == "test_TC_MUTASI_PECAH_001":
             driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=tetap")
             filter_nibar_pembukuan(self.driver, self.nibar)
         else:
@@ -104,7 +104,7 @@ class TC_MUTASI_REKLAS_PECAH(unittest.TestCase):
         checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
 
-    def test_TC_MUTASI_REKLAS_PECAH_001(self):
+    def test_TC_MUTASI_PECAH_001(self):
         driver = self.driver
         href_button(driver, "javascript:pecah.Baru()")
         time.sleep(1)
@@ -120,10 +120,10 @@ class TC_MUTASI_REKLAS_PECAH(unittest.TestCase):
         print_result(
             alert_text,
             "Selesai proses 2 data",
-            test_name="TC_MUTASI_REKLAS_PECAH_001",
+            test_name="TC_MUTASI_PECAH_001",
         )
 
-    def test_TC_MUTASI_REKLAS_PECAH_002(self):
+    def test_TC_MUTASI_PECAH_002(self):
         driver = self.driver
         time.sleep(1)
         href_button(driver, "javascript:pecah.Edit()")
@@ -144,10 +144,10 @@ class TC_MUTASI_REKLAS_PECAH(unittest.TestCase):
         print_result(
             True,
             True,
-            test_name="TC_MUTASI_REKLAS_PECAH_002",
+            test_name="TC_MUTASI_PECAH_002",
         )
 
-    def test_TC_MUTASI_REKLAS_PECAH_003(self):
+    def test_TC_MUTASI_PECAH_003(self):
         driver = self.driver
         time.sleep(1)
         href_button(driver, "javascript:pecah.batalForm()")
@@ -162,7 +162,7 @@ class TC_MUTASI_REKLAS_PECAH(unittest.TestCase):
         print_result(
             alert_text,
             "Selesai",
-            test_name="TC_MUTASI_REKLAS_PECAH_003",
+            test_name="TC_MUTASI_PECAH_003",
         )
 
     def accept_alert(self):

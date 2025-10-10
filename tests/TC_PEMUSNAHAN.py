@@ -21,7 +21,7 @@ from pages.login_page import LoginPage
 import time
 
 
-class TC_MUTASI_REKLAS_KIB(unittest.TestCase):
+class TC_PEMUSNAHAN(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.driver, cls.wait, cls.url = create_driver()
@@ -30,7 +30,7 @@ class TC_MUTASI_REKLAS_KIB(unittest.TestCase):
         user = os.getenv("user")
         password = os.getenv("password")
         LoginPage(cls.driver).login(user, password)
-        TC_MUTASI_REKLAS_KIB.nibar = os.getenv("nibar")
+        TC_PEMUSNAHAN.nibar = os.getenv("nibar")
         cls.main_window = cls.driver.current_window_handle
         time.sleep(3)
 
@@ -68,73 +68,59 @@ class TC_MUTASI_REKLAS_KIB(unittest.TestCase):
             except Exception:
                 pass
 
-    def _return_to_main_and_close_extras(self):
-        try:
-            windows = self.driver.window_handles
-            if (
-                hasattr(self.__class__, "main_window")
-                and self.__class__.main_window in windows
-            ):
-                keep = self.__class__.main_window
-            else:
-                keep = windows[0]
-                self.__class__.main_window = keep
-
-            for w in list(windows):
-                if w != keep:
-                    self.driver.switch_to.window(w)
-                    try:
-                        self.driver.close()
-                    except Exception:
-                        pass
-            self.driver.switch_to.window(keep)
-        except Exception:
-            pass
-
     def setUp(self):
         self.__class__._ensure_focus_on_open_window()
 
         driver = self.driver
-        if self._testMethodName == "test_TC_MUTASI_REKLAS_KIB_001":
+        if self._testMethodName != "test_TC_PEMUSNAHAN_003":
             driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=tetap")
             filter_nibar_pembukuan(self.driver, self.nibar)
         else:
-            driver.get(
-                f"{self.url}index.php?Pg=09&SPg=01&SSPg=03&mutasi=2&menu=pelaporan"
-            )
-            filter_pengamanan(self.driver, self.nibar or "", "id_barang")
-
+            driver.get(f"{self.url}pages.php?Pg=pemusnahan")
+            filter_pengamanan(self.driver, self.nibar or "", "fmid_barang")
         time.sleep(1)
         checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
+        href = "javascript:pemusnahan_ins.pemusnahanbaru()"
+        if self._testMethodName == "test_TC_PEMUSNAHAN_003":
+            href = "javascript:pemusnahan.Hapus()"
+        href_button(driver, href)
 
-    def test_TC_MUTASI_REKLAS_KIB_001(self):
+    def helper_create(self, test_case):
+        test_case = f"test_TC_PEMUSNAHAN_00{test_case}"
+        print(test_case)
         driver = self.driver
-        href_button(driver, "javascript:Reclass.reClass()")
-        time.sleep(1)
-        driver.switch_to.window(driver.window_handles[-1])
-        time.sleep(1)
-        button(driver, By.ID, "caribarang")
-        time.sleep(1)
-        button(driver, By.XPATH, '//table[@class="koptable"]/tbody/tr[1]/td[2]/a')
-        time.sleep(1)
-        button(driver, By.ID, "btsave")
-        alert_text = self.get_alert_text()
-        print_result(
-            alert_text, "Sukses Reclass !", test_name="TC_MUTASI_REKLAS_KIB_001"
-        )
-
-    def test_TC_MUTASI_REKLAS_KIB_003(self):
-        driver = self.driver
-        time.sleep(1)
-        href_button(driver, "javascript:Batal_Reclass()")
-        time.sleep(1)
         self.accept_alert()
-        alert_text = self.get_alert_text()
-        print_result(
-            alert_text, "Data sukses di batalkan", test_name="TC_MUTASI_REKLAS_KIB_003"
+        time.sleep(1)
+        try:
+            driver.switch_to.window(driver.window_handles[-1])
+        except Exception:
+            pass
+        form_input(driver, By.ID, "no_sk", "tes")
+        time.sleep(1)
+        form_input(driver, By.ID, "cr_pemusnahan", "tes")
+        time.sleep(1)
+        href_button(driver, "javascript:pemusnahan_ins.Simpan3()")
+        time.sleep(1)
+        return test_case
+
+    def test_TC_PEMUSNAHAN_001(self):
+        test_case = self.helper_create("1")
+        self.errmsg_helper(
+            test_case,
+            f"1. ID {TC_PEMUSNAHAN.nibar} NIBAR {TC_PEMUSNAHAN.nibar} masih dalam pengamanan penggunaan, harus pengembalian!",
         )
-        self._return_to_main_and_close_extras()
+
+    def test_TC_PEMUSNAHAN_002(self):
+        test_case = self.helper_create("1")
+        alert_text = self.get_alert_text()
+        print_result(alert_text, "Pemusnahan Selesai !", test_case)
+
+    def test_TC_PEMUSNAHAN_003(self):
+        self.accept_alert()
+        test_case = "test_TC_PEMUSNAHAN_003"
+        alert_text = self.get_alert_text()
+        print_result(alert_text, "Sukses Hapus Data", test_case)
 
     def accept_alert(self):
         try:
@@ -144,7 +130,25 @@ class TC_MUTASI_REKLAS_KIB(unittest.TestCase):
         except Exception:
             pass
 
+    def errmsg_helper(self, testCase, expected, errMsgId="errmsg", alert=True):
+        if alert:
+            alert = self.wait.until(EC.alert_is_present())
+            if alert:
+                alert.accept()
+        time.sleep(3)
+        try:
+            textarea = self.wait.until(
+                EC.presence_of_element_located((By.ID, errMsgId))
+            )
+            value = textarea.get_attribute("value") or ""
+            actual = value.strip()
+
+            print_result(actual, expected, testCase)
+        except TimeoutException:
+            self.fail("[❌] Textarea dengan id 'errmsg' tidak ditemukan")
+
     def get_alert_text(self, timeout=5, auto_accept=True):
+        time.sleep(3)
         try:
             WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
             alert = self.driver.switch_to.alert
