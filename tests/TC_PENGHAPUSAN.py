@@ -21,7 +21,7 @@ from pages.login_page import LoginPage
 import time
 
 
-class TC_PEMUSNAHAN(unittest.TestCase):
+class TC_PENGHAPUSAN(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.driver, cls.wait, cls.url = create_driver()
@@ -30,7 +30,7 @@ class TC_PEMUSNAHAN(unittest.TestCase):
         user = os.getenv("user")
         password = os.getenv("password")
         LoginPage(cls.driver).login(user, password)
-        TC_PEMUSNAHAN.nibar = os.getenv("nibar")
+        TC_PENGHAPUSAN.nibar = os.getenv("nibar")
         cls.main_window = cls.driver.current_window_handle
         time.sleep(3)
 
@@ -72,22 +72,22 @@ class TC_PEMUSNAHAN(unittest.TestCase):
         self.__class__._ensure_focus_on_open_window()
 
         driver = self.driver
-        if self._testMethodName != "test_TC_PEMUSNAHAN_003":
+        if self._testMethodName != "test_TC_PENGHAPUSAN_003":
             driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=tetap")
             filter_nibar_pembukuan(self.driver, self.nibar)
         else:
-            driver.get(f"{self.url}pages.php?Pg=pemusnahan")
-            filter_pengamanan(self.driver, self.nibar or "", "fmid_barang")
+            driver.get(f"{self.url}index.php?Pg=09&SPg=01&SSPg=03")
+            filter_pengamanan(self.driver, self.nibar or "", "id_barang")
         time.sleep(1)
         checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
-        href = "javascript:pemusnahan_ins.pemusnahanbaru()"
-        if self._testMethodName == "test_TC_PEMUSNAHAN_003":
-            href = "javascript:pemusnahan.Hapus()"
+        href = "javascript:penghapusan_ins.penghapusanbaru(1)"
+        if self._testMethodName == "test_TC_PENGHAPUSAN_003":
+            href = "javascript:Penghapusan_Hapus()"
         href_button(driver, href)
 
     def helper_create(self, test_case):
-        test_case = f"test_TC_PEMUSNAHAN_00{test_case}"
+        test_case = f"test_TC_PENGHAPUSAN_00{test_case}"
         print(test_case)
         driver = self.driver
         self.accept_alert()
@@ -98,29 +98,29 @@ class TC_PEMUSNAHAN(unittest.TestCase):
             pass
         form_input(driver, By.ID, "no_sk", "tes")
         time.sleep(1)
-        form_input(driver, By.ID, "cr_pemusnahan", "tes")
+        Dropdown(driver, "fmpenyebab", 1)
         time.sleep(1)
-        href_button(driver, "javascript:pemusnahan_ins.Simpan3()")
+        href_button(driver, "javascript:penghapusan_ins.Simpan()")
         time.sleep(1)
         return test_case
 
-    def test_TC_PEMUSNAHAN_001(self):
+    def test_TC_PENGHAPUSAN_001(self):
         test_case = self.helper_create("1")
         self.errmsg_helper(
             test_case,
-            f"1. ID {TC_PEMUSNAHAN.nibar} NIBAR {TC_PEMUSNAHAN.nibar} masih dalam pengamanan penggunaan, harus pengembalian!",
+            f"1. ID {TC_PENGHAPUSAN.nibar} Barang masih dalam pengamanan penggunaan, harus pengembalian!",
         )
 
-    def test_TC_PEMUSNAHAN_002(self):
+    def test_TC_PENGHAPUSAN_002(self):
         test_case = self.helper_create("2")
         alert_text = self.get_alert_text()
-        print_result(alert_text, "Pemusnahan Selesai !", test_case)
+        print_result(alert_text, "Penghapusan Selesai !", test_case)
 
-    def test_TC_PEMUSNAHAN_003(self):
+    def test_TC_PENGHAPUSAN_003(self):
         self.accept_alert()
-        test_case = "test_TC_PEMUSNAHAN_003"
+        test_case = "test_TC_PENGHAPUSAN_003"
         alert_text = self.get_alert_text()
-        print_result(alert_text, "Sukses Hapus Data", test_case)
+        print_result(alert_text, "Data sukses di batalkan", test_case)
 
     def accept_alert(self):
         try:
