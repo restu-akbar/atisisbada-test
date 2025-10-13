@@ -149,8 +149,8 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         time.sleep(3)
             
     # @unittest.skip("delete")
-    def test_TC_PEMINDAH_TANGANAN_004(self):
-        print("test_TC_PEMINDAH_TANGANAN_004")
+    def test_TC_PEMINDAH_TANGANAN_003(self):
+        print("test_TC_PEMINDAH_TANGANAN_003")
         driver = self.driver
         driver.get(f"{self.url}index.php?Pg=10")
         time.sleep(2)
@@ -172,7 +172,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
             driver,
             expected="Sukses Hapus Data",
             with_button=False,
-            test_name="TC_PEMINDAH_TANGANAN_004",
+            test_name="TC_PEMINDAH_TANGANAN_003",
         )
         
         time.sleep(3)
