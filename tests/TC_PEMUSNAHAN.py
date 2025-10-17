@@ -20,7 +20,7 @@ from helpers.print_result import print_result
 from pages.login_page import LoginPage
 import time
 
-
+# python -m unittest tests.TC_PEMUSNAHAN -k test_TC_PEMUSNAHAN_001
 class TC_PEMUSNAHAN(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

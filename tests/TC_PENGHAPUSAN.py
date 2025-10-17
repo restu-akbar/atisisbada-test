@@ -20,7 +20,7 @@ from helpers.print_result import print_result
 from pages.login_page import LoginPage
 import time
 
-
+# python -m unittest tests.TC_PENGHAPUSAN -k test_TC_PENGHAPUSAN_001
 class TC_PENGHAPUSAN(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
