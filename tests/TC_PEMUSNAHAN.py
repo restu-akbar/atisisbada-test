@@ -8,8 +8,6 @@ from selenium.common.exceptions import (
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from components.button import button
-from components.dropdown import Dropdown
 from components.checkbox import checkbox
 from components.form_input import form_input
 from components.href_button import href_button

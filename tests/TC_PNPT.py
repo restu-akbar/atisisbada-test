@@ -1,4 +1,3 @@
-from datetime import date, datetime
 import unittest
 import os
 from dotenv import load_dotenv
@@ -17,8 +16,7 @@ from helpers.logout_helper import logout
 from helpers.print_result import print_result
 from pages.login_page import LoginPage
 import time
-import calendar
-from zoneinfo import ZoneInfo
+from tests.TC_PEMANFAATAN import helper_pemanfaatan
 
 
 class TC_PNPT(unittest.TestCase):
@@ -39,14 +37,14 @@ class TC_PNPT(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        #         try:
-        #             logout(cls.driver)
-        #         except Exception as e:
-        #             print(f"⚠️ Logout gagal: {e}")
-        #         finally:
-        #             cls.driver.quit()
-        #
-        cls.driver.quit()
+        try:
+            logout(cls.driver)
+        except Exception as e:
+            print(f"⚠️ Logout gagal: {e}")
+        finally:
+            cls.driver.quit()
+
+    #         cls.driver.quit()
 
     def setUp(self):
         driver = self.driver
@@ -177,7 +175,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         save_get_alert(
             driver,
-            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
+            expected="Gagal, ID Barang " + TC_PNPT.nibar + " masih dalam pengamanan!",
             test_name="TC_PNPT__003",
             with_button=False,
         )
@@ -196,7 +194,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         save_get_alert(
             driver,
-            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
+            expected="Gagal, ID Barang " + TC_PNPT.nibar + " masih dalam pengamanan!",
             test_name="TC_PNPT_004",
             with_button=False,
         )
@@ -278,7 +276,7 @@ class TC_PNPT(unittest.TestCase):
         button(driver, By.ID, "btsave")
         save_get_alert(
             driver,
-            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
+            expected="Gagal, ID Barang " + TC_PNPT.nibar + " masih dalam pengamanan!",
             test_name="TC_PNPT_007",
             with_button=False,
         )
@@ -297,7 +295,7 @@ class TC_PNPT(unittest.TestCase):
         time.sleep(1)
         save_get_alert(
             driver,
-            expected="Gagal, ID Barang "+TC_PNPT.nibar+" masih dalam pengamanan!",
+            expected="Gagal, ID Barang " + TC_PNPT.nibar + " masih dalam pengamanan!",
             test_name="TC_PNPT_008",
             with_button=False,
         )
@@ -443,42 +441,9 @@ class TC_PNPT(unittest.TestCase):
         )
 
     def test_TC_PNPT_017(self):
-        driver = self.driver
         tc = "TC_PNPT_017"
         print(f"test_{tc}")
-        today = datetime.now(ZoneInfo("Asia/Jakarta")).date()
-        tgl_str = f"{today.day}"  # contoh: "07"
-        bln_str = f"{today.month:02d}"  # contoh: "09"
-        thn_str = str(today.year)  # contoh: "2025"
-
-        end_dt = add_one_month_safe(today)
-        end_tgl_str = f"{end_dt.day}"
-        end_bln_str = f"{end_dt.month:02d}"
-        end_thn_str = str(end_dt.year)
-
-        Dropdown(driver, "fmTANGGALPEMANFAATAN_tgl", tgl_str)
-        time.sleep(1)
-        Dropdown(driver, "fmTANGGALPEMANFAATAN_bln", bln_str)
-        time.sleep(1)
-
-        Dropdown(driver, "fmBENTUKPEMANFAATAN", "1")
-        time.sleep(1)
-
-        Dropdown(driver, "fmSURATTANGGAL_tgl", tgl_str)
-        time.sleep(1)
-        Dropdown(driver, "fmSURATTANGGAL_bln", bln_str)
-        time.sleep(1)
-        Dropdown(driver, "fmSURATTANGGAL_thn", thn_str)
-        time.sleep(1)
-
-        Dropdown(driver, "fmTANGGALPEMANFAATAN_akhir_tgl", end_tgl_str)
-        time.sleep(1)
-        Dropdown(driver, "fmTANGGALPEMANFAATAN_akhir_bln", end_bln_str)
-        Dropdown(driver, "fmTANGGALPEMANFAATAN_akhir_bln", end_bln_str)
-        time.sleep(1)
-        form_input(driver, By.ID, "fmTANGGALPEMANFAATAN_akhir_thn", end_thn_str)
-        time.sleep(1)
-        button(driver, By.ID, "btSimpan")
+        helper_pemanfaatan(self.driver)
         self.errmsg_helper(tc, "fmErrMsg")
 
     def test_TC_PNPT_018(self):
@@ -592,15 +557,6 @@ class TC_PNPT(unittest.TestCase):
             print_result(actual, True, testCase)
         except TimeoutException:
             self.fail("[❌] Textarea dengan id 'errmsg' tidak ditemukan")
-
-
-def add_one_month_safe(dt: date) -> date:
-    y, m = dt.year, dt.month + 1
-    if m == 13:
-        y, m = y + 1, 1
-    last_day_next = calendar.monthrange(y, m)[1]
-    d = min(dt.day, last_day_next)
-    return date(y, m, d)
 
 
 if __name__ == "__main__":
