@@ -83,8 +83,7 @@ class TC_PENGHAPUSAN(unittest.TestCase):
             driver.get(f"{self.url}pages.php?Pg=pemusnahan&jns=pelaporan")
             filter_pengamanan(self.driver, self.nibar or "", "fmid_barang")
         elif name == "test_TC_PENGHAPUSAN_005":
-            driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=tetap")
-            flow_pemindahtanganan_001(self.driver, self.nibar)
+            flow_pemindahtanganan_001(self.driver, self.url,self.nibar)
             self.__class__._ensure_focus_on_open_window()
             driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=pindah")
             filter_nibar_pembukuan(self.driver, self.nibar)

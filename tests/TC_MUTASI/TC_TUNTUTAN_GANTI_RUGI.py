@@ -21,6 +21,7 @@ import time
 from selenium.webdriver.support import expected_conditions as EC
 
 #python -m unittest tests.TC_MUTASI.TC_TUNTUTAN_GANTI_RUGI
+#python -m unittest tests.TC_MUTASI.TC_TUNTUTAN_GANTI_RUGI -k test_TC_TUNTUTAN_GANTI_RUGI_003
 class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -77,9 +78,10 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
         except Exception as e:
             print(f"[⚠️] Gagal menutup tab atau berpindah: {e}")
 
-    @unittest.skip("test")
+    # @unittest.skip("test")
     def test_TC_TUNTUTAN_GANTI_RUGI_001(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_001")
+        print("Buat")
         driver = self.driver
         user = os.getenv("user")
         href_button(driver, "javascript:gantirugi.KetetapanTanpaUsulan(1)")
@@ -116,9 +118,10 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
         time.sleep(2)
     
     #edit
-    @unittest.skip("Bug")
+    # @unittest.skip("Bug")
     def test_TC_TUNTUTAN_GANTI_RUGI_002(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_002")
+        print("Edit")
         driver = self.driver
         user = os.getenv("user")
         driver.get(f"{self.url}pages.php?Pg=gantirugi")
@@ -150,9 +153,10 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
             test_name="TC_TUNTUTAN_GANTI_RUGI_001",
         )
         
-    @unittest.skip("Bug")
+    @unittest.skip("Delete Ganti Rugi")
     def test_TC_TUNTUTAN_GANTI_RUGI_003(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_003")
+        print("Batal")
         driver = self.driver
         user = os.getenv("user")
         driver.get(f"{self.url}pages.php?Pg=gantirugi")
@@ -182,6 +186,7 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
     # @unittest.skip("Bug")
     def test_TC_TUNTUTAN_GANTI_RUGI_004(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_004")
+        print("Buat Pembayaran")
         driver = self.driver
         driver.get(f"{self.url}pages.php?Pg=gantirugibayar")
         time.sleep(3)
@@ -218,6 +223,7 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
     #Edit Di Lunas Kan
     def test_TC_TUNTUTAN_GANTI_RUGI_005(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_005")
+        print("Edit Pembayaran Menjadi Lunas")
         driver = self.driver
         driver.get(f"{self.url}pages.php?Pg=gantirugibayar")
         time.sleep(3)
@@ -233,10 +239,10 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
         
         form_input(driver,By.ID,"bayar",jumlah_ketetapan)
         form_input(driver,By.ID,"dari_nama","receipt Testing")
-        form_input(driver,By.ID,"ket","Auto Testing	Lunas")
+        form_input(driver,By.ID,"ket","Auto Testing Edit Lunas")
         time.sleep(5)
         button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(5)")
-        print_result("Selesai", "Selesai", "TC_TUNTUTAN_GANTI_RUGI_004")
+        print_result("Selesai", "Selesai", "TC_TUNTUTAN_GANTI_RUGI_005")
         time.sleep(10)
     
     
@@ -244,6 +250,7 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
     # @unittest.skip("Bug")
     def test_TC_TUNTUTAN_GANTI_RUGI_006(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_006")
+        print("Batal Kan yang Lunas")
         driver = self.driver
         driver.get(f"{self.url}pages.php?Pg=gantirugibayar")
         time.sleep(3)

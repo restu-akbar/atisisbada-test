@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from components.dropdown import Dropdown
-from components.form_input import form_input
+from components.form_input import form_input,get_value_form
 from components.button import button
 from components.checkbox import checkbox
 from helpers.filter_nibar import filter_nibar_pembukuan
@@ -13,6 +13,7 @@ from helpers.driver_setup import create_driver
 from helpers.logout_helper import logout
 from helpers.PM.save_get_alert import save_get_alert
 from helpers.print_result import print_result
+from helpers.Pengamanan import PengamananPM,BatalPengamananPM
 
 from selenium.webdriver.common.alert import Alert
 from pages.login_page import LoginPage
@@ -79,7 +80,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
 
     # @unittest.skip("test")
     def test_TC_PEMINDAH_TANGANAN_001(self):
-        flow_pemindahtanganan_001(self.driver, self.nibar)
+        flow_pemindahtanganan_001(self.driver,self.url, self.nibar)
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
 
@@ -146,11 +147,20 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         )
 
         time.sleep(3)
+        
+    def test_TC_PEMINDAH_TANGANAN_004(self):
+        print("test_TC_PEMINDAH_TANGANAN_004")
+        PengamananPM(self.driver,self.nibar)
+        flow_pemindahtanganan_001(self.driver,self.url, self.nibar,pengamanan= True)
+        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
+        time.sleep(2)
+        BatalPengamananPM(self.driver,self.nibar)
 
 
-def flow_pemindahtanganan_001(driver, nibar):
+def flow_pemindahtanganan_001(driver, url,nibar,pengamanan=False):
     print("test_TC_PEMINDAH_TANGANAN_001")
-
+    
+    driver.get(f"{url}index.php?Pg=05&SPg=03&jns=tetap")
     filter_nibar_pembukuan(driver, nibar)
     time.sleep(1)
     checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
@@ -176,12 +186,24 @@ def flow_pemindahtanganan_001(driver, nibar):
         time.sleep(3)
         button(driver, By.ID, "btsave")
 
-    save_get_alert(
-        driver,
-        expected="Pemindahtanganan Selesai !",
-        with_button=False,
-        test_name="TC_PEMINDAH_TANGANAN_001",
-    )
+    if not pengamanan:
+        save_get_alert(
+            driver,
+            expected="Pemindahtanganan Selesai !",
+            with_button=False,
+            test_name="TC_PEMINDAH_TANGANAN_001",
+        )
+    else:
+        save_get_alert(
+            driver,
+            expected="Ada 1 Kesalahan !",
+            with_button=False,
+            test_name="TC_PEMINDAH_TANGANAN_004",
+        )
+        errmsg = get_value_form(driver,By.ID,"errmsg")
+        print(f"ℹ️ Error Message: {errmsg}")
+        time.sleep(4)
+    
     time.sleep(3)
 
 
