@@ -18,6 +18,7 @@ from helpers.print_result import print_result
 from pages.login_page import LoginPage
 import time
 
+
 # python -m unittest tests.TC_PEMUSNAHAN -k test_TC_PEMUSNAHAN_001
 class TC_PEMUSNAHAN(unittest.TestCase):
     @classmethod
@@ -44,6 +45,8 @@ class TC_PEMUSNAHAN(unittest.TestCase):
                 cls.driver.quit()
             except Exception:
                 pass
+
+    #         cls.driver.quit()
 
     @classmethod
     def _ensure_focus_on_open_window(cls):
@@ -84,49 +87,21 @@ class TC_PEMUSNAHAN(unittest.TestCase):
             href = "javascript:pemusnahan.Hapus()"
         href_button(driver, href)
 
-    def helper_create(self, test_case):
-        test_case = f"test_TC_PEMUSNAHAN_00{test_case}"
-        print(test_case)
-        driver = self.driver
-        self.accept_alert()
-        time.sleep(1)
-        try:
-            driver.switch_to.window(driver.window_handles[-1])
-        except Exception:
-            pass
-        form_input(driver, By.ID, "no_sk", "tes")
-        time.sleep(1)
-        form_input(driver, By.ID, "cr_pemusnahan", "tes")
-        time.sleep(1)
-        href_button(driver, "javascript:pemusnahan_ins.Simpan3()")
-        time.sleep(1)
-        return test_case
-
     def test_TC_PEMUSNAHAN_001(self):
-        test_case = self.helper_create("1")
+        test_case = helper_create(self.driver, "1")
         self.errmsg_helper(
             test_case,
             f"1. ID {TC_PEMUSNAHAN.nibar} NIBAR {TC_PEMUSNAHAN.nibar} masih dalam pengamanan penggunaan, harus pengembalian!",
         )
 
     def test_TC_PEMUSNAHAN_002(self):
-        test_case = self.helper_create("2")
-        alert_text = self.get_alert_text()
-        print_result(alert_text, "Pemusnahan Selesai !", test_case)
+        flow_pemusnahan_002(self.driver)
 
     def test_TC_PEMUSNAHAN_003(self):
-        self.accept_alert()
+        accept_alert(self.driver)
         test_case = "test_TC_PEMUSNAHAN_003"
-        alert_text = self.get_alert_text()
+        alert_text = get_alert_text(self.driver)
         print_result(alert_text, "Sukses Hapus Data", test_case)
-
-    def accept_alert(self):
-        try:
-            self.driver.switch_to.alert.accept()
-        except NoAlertPresentException:
-            pass
-        except Exception:
-            pass
 
     def errmsg_helper(self, testCase, expected, errMsgId="errmsg", alert=True):
         if alert:
@@ -145,16 +120,52 @@ class TC_PEMUSNAHAN(unittest.TestCase):
         except TimeoutException:
             self.fail("[❌] Textarea dengan id 'errmsg' tidak ditemukan")
 
-    def get_alert_text(self, timeout=5, auto_accept=True):
-        time.sleep(3)
-        try:
-            WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
-            alert = self.driver.switch_to.alert
-            text = alert.text
-            if auto_accept:
-                alert.accept()
-            return text
-        except (TimeoutException, NoAlertPresentException):
-            return None
-        except Exception:
-            return None
+
+def flow_pemusnahan_002(driver, isOri=True):
+    test_case = helper_create(driver, "2")
+    alert_text = get_alert_text(driver)
+    print_result(alert_text, "Pemusnahan Selesai !", test_case)
+    if not isOri:
+        return
+
+
+def helper_create(driver, test_case):
+    test_case = f"test_TC_PEMUSNAHAN_00{test_case}"
+    print(test_case)
+    accept_alert(driver)
+    time.sleep(1)
+    try:
+        driver.switch_to.window(driver.window_handles[-1])
+    except Exception:
+        pass
+    form_input(driver, By.ID, "no_sk", "tes")
+    time.sleep(1)
+    form_input(driver, By.ID, "cr_pemusnahan", "tes")
+    time.sleep(1)
+    href_button(driver, "javascript:pemusnahan_ins.Simpan3()")
+    time.sleep(1)
+    return test_case
+
+
+def accept_alert(driver):
+    try:
+        driver.switch_to.alert.accept()
+    except NoAlertPresentException:
+        pass
+    except Exception:
+        pass
+
+
+def get_alert_text(driver, timeout=5, auto_accept=True):
+    time.sleep(3)
+    try:
+        WebDriverWait(driver, timeout).until(EC.alert_is_present())
+        alert = driver.switch_to.alert
+        text = alert.text
+        if auto_accept:
+            alert.accept()
+        return text
+    except (TimeoutException, NoAlertPresentException):
+        return None
+    except Exception:
+        return None

@@ -19,6 +19,10 @@ from helpers.print_result import print_result
 from pages.login_page import LoginPage
 import time
 
+from tests.TC_MUTASI.TC_PEMINDAH_TANGANAN import flow_pemindahtanganan_001
+from tests.TC_PEMUSNAHAN import flow_pemusnahan_002
+
+
 # python -m unittest tests.TC_PENGHAPUSAN -k test_TC_PENGHAPUSAN_001
 class TC_PENGHAPUSAN(unittest.TestCase):
     @classmethod
@@ -69,35 +73,57 @@ class TC_PENGHAPUSAN(unittest.TestCase):
 
     def setUp(self):
         self.__class__._ensure_focus_on_open_window()
-
         driver = self.driver
-        if self._testMethodName != "test_TC_PENGHAPUSAN_003":
+        name = self._testMethodName
+
+        if name == "test_TC_PENGHAPUSAN_004":
+            self.run_pemusnahan_002_precond(self.url, self.nibar)
+            flow_pemusnahan_002(driver, True)
+            self.__class__._ensure_focus_on_open_window()
+            driver.get(f"{self.url}pages.php?Pg=pemusnahan&jns=pelaporan")
+            filter_pengamanan(self.driver, self.nibar or "", "fmid_barang")
+        elif name == "test_TC_PENGHAPUSAN_005":
             driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=tetap")
+            flow_pemindahtanganan_001(self.driver, self.nibar)
+            self.__class__._ensure_focus_on_open_window()
+            driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=pindah")
             filter_nibar_pembukuan(self.driver, self.nibar)
-        else:
+
+        elif name == "test_TC_PENGHAPUSAN_003":
             driver.get(f"{self.url}index.php?Pg=09&SPg=01&SSPg=03")
             filter_pengamanan(self.driver, self.nibar or "", "id_barang")
+
+        else:
+            driver.get(f"{self.url}index.php?Pg=05&SPg=03&jns=tetap")
+            filter_nibar_pembukuan(self.driver, self.nibar)
+
         time.sleep(1)
         checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
         time.sleep(1)
+
         href = "javascript:penghapusan_ins.penghapusanbaru(1)"
-        if self._testMethodName == "test_TC_PENGHAPUSAN_003":
+        if name == "test_TC_PENGHAPUSAN_003":
             href = "javascript:Penghapusan_Hapus()"
+        elif name == "test_TC_PENGHAPUSAN_004":
+            href = "javascript:penghapusan_ins.penghapusanbaru(3)"
+
         href_button(driver, href)
 
-    def helper_create(self, test_case):
+    def helper_create(self, test_case, isOther=True):
         test_case = f"test_TC_PENGHAPUSAN_00{test_case}"
         print(test_case)
         driver = self.driver
+        time.sleep(2)
         self.accept_alert()
-        time.sleep(1)
+        time.sleep(2)
         try:
             driver.switch_to.window(driver.window_handles[-1])
         except Exception:
             pass
         form_input(driver, By.ID, "no_sk", "tes")
         time.sleep(1)
-        Dropdown(driver, "fmpenyebab", 1)
+        if isOther:
+            Dropdown(driver, "fmpenyebab", 1)
         time.sleep(1)
         href_button(driver, "javascript:penghapusan_ins.Simpan()")
         time.sleep(1)
@@ -118,8 +144,27 @@ class TC_PENGHAPUSAN(unittest.TestCase):
     def test_TC_PENGHAPUSAN_003(self):
         self.accept_alert()
         test_case = "test_TC_PENGHAPUSAN_003"
+        time.sleep(3)
         alert_text = self.get_alert_text()
         print_result(alert_text, "Data sukses di batalkan", test_case)
+
+    def test_TC_PENGHAPUSAN_004(self):
+        test_case = self.helper_create("4", False)
+        alert_text = self.get_alert_text()
+        print_result(alert_text, "Penghapusan Selesai !", test_case)
+
+    def test_TC_PENGHAPUSAN_005(self):
+        test_case = self.helper_create("5")
+        alert_text = self.get_alert_text()
+        print_result(alert_text, "Penghapusan Selesai !", test_case)
+
+    def run_pemusnahan_002_precond(self, url, nibar):
+        self.driver.get(f"{url}index.php?Pg=05&SPg=03&jns=tetap")
+        filter_nibar_pembukuan(self.driver, nibar)
+        time.sleep(1)
+        checkbox(self.driver, identifier=1, by="index", table_selector="table.koptable")
+        time.sleep(1)
+        href_button(self.driver, "javascript:pemusnahan_ins.pemusnahanbaru()")
 
     def accept_alert(self):
         try:

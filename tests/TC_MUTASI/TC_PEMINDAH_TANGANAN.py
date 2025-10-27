@@ -19,7 +19,8 @@ from pages.login_page import LoginPage
 import time
 from selenium.webdriver.support import expected_conditions as EC
 
-#python -m unittest tests.TC_MUTASI.TC_PEMINDAH_TANGANAN
+
+# python -m unittest tests.TC_MUTASI.TC_PEMINDAH_TANGANAN
 class TC_PEMINDAH_TANGANAN(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -44,9 +45,9 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
             print(f"⚠️ Logout gagal: {e}")
         finally:
             cls.driver.quit()
-        
+
         # cls.driver.quit()
-        
+
     def switch_to_main_window(driver):
         """Force switch to the first (main) window."""
         try:
@@ -78,46 +79,11 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
 
     # @unittest.skip("test")
     def test_TC_PEMINDAH_TANGANAN_001(self):
-        print("test_TC_PEMINDAH_TANGANAN_001")
-        driver = self.driver
-        
-        filter_nibar_pembukuan(driver, self.__class__.nibar)
-        time.sleep(1)
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        href_button(driver, "javascript:pemindahtanganan_ins.pemindahtangananbaru()()")
+        flow_pemindahtanganan_001(self.driver, self.nibar)
+        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
-        
-        alert = Alert(self.driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
-        time.sleep(2)   
-        
-        handles = driver.window_handles
-        if len(handles) > 1:
-            driver.switch_to.window(handles[-1])
-            time.sleep(2)
-            form_input(driver, By.ID, "no_sk", "999123")
 
-            Dropdown(driver, "fmBENTUKPEMINDAHTANGANAN", "1")
-            time.sleep(3)
-            form_input(driver,By.ID,"ket","Auto testing Keterangan")
-            time.sleep(3)
-            button(driver,By.ID,"btsave")
-        
-        save_get_alert(
-            driver,
-            expected="Pemindahtanganan Selesai !",
-            with_button=False,
-            test_name="TC_PEMINDAH_TANGANAN_001",
-        )
-        time.sleep(3)
-        
-        TC_PEMINDAH_TANGANAN.switch_to_main_window(driver)
-        time.sleep(2)
-        
-     # @unittest.skip("Ubah")
+    # @unittest.skip("Ubah")
     def test_TC_PEMINDAH_TANGANAN_002(self):
         print("test_TC_PEMINDAH_TANGANAN_002")
         driver = self.driver
@@ -130,24 +96,28 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         time.sleep(2)
         href_button(driver, "javascript:Pindahtangan.Edit()")
         time.sleep(2)
-        
-        form_input(driver,By.ID,"nosk","988")
-        form_input(driver,By.ID,"kepada_nama","Sulthan Aulia Rahman")
-        form_input(driver,By.ID,"kepada_alamat","Alamat Penerima")
-        form_input(driver,By.ID,"uraian","Testing Edited")
-        form_input(driver,By.ID,"ket","Keterangan Edited")
+
+        form_input(driver, By.ID, "nosk", "988")
+        form_input(driver, By.ID, "kepada_nama", "Sulthan Aulia Rahman")
+        form_input(driver, By.ID, "kepada_alamat", "Alamat Penerima")
+        form_input(driver, By.ID, "uraian", "Testing Edited")
+        form_input(driver, By.ID, "ket", "Keterangan Edited")
         time.sleep(4)
-        
-        button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)")
+
+        button(
+            driver,
+            By.CSS_SELECTOR,
+            "#div_border > div:nth-child(3) > div > input[type=button]:nth-child(1)",
+        )
         save_get_alert(
             driver,
             expected="Sukses Simpan Data",
             with_button=False,
             test_name="TC_PEMINDAH_TANGANAN_002",
         )
-        
+
         time.sleep(3)
-            
+
     # @unittest.skip("delete")
     def test_TC_PEMINDAH_TANGANAN_003(self):
         print("test_TC_PEMINDAH_TANGANAN_003")
@@ -161,21 +131,60 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         time.sleep(2)
         href_button(driver, "javascript:Pindahtangan.Hapus()")
         time.sleep(2)
-        
+
         alert = Alert(driver)
         alert_text = alert.text
         print(f"ℹ️ Alert muncul: {alert_text}")
         alert.accept()
         time.sleep(3)
-        
+
         save_get_alert(
             driver,
             expected="Sukses Hapus Data",
             with_button=False,
             test_name="TC_PEMINDAH_TANGANAN_003",
         )
-        
+
         time.sleep(3)
+
+
+def flow_pemindahtanganan_001(driver, nibar):
+    print("test_TC_PEMINDAH_TANGANAN_001")
+
+    filter_nibar_pembukuan(driver, nibar)
+    time.sleep(1)
+    checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+    time.sleep(1)
+    href_button(driver, "javascript:pemindahtanganan_ins.pemindahtangananbaru()()")
+    time.sleep(2)
+
+    alert = Alert(driver)
+    alert_text = alert.text
+    print(f"ℹ️ Alert muncul: {alert_text}")
+    alert.accept()
+    time.sleep(2)
+
+    handles = driver.window_handles
+    if len(handles) > 1:
+        driver.switch_to.window(handles[-1])
+        time.sleep(2)
+        form_input(driver, By.ID, "no_sk", "999123")
+
+        Dropdown(driver, "fmBENTUKPEMINDAHTANGANAN", "1")
+        time.sleep(3)
+        form_input(driver, By.ID, "ket", "Auto testing Keterangan")
+        time.sleep(3)
+        button(driver, By.ID, "btsave")
+
+    save_get_alert(
+        driver,
+        expected="Pemindahtanganan Selesai !",
+        with_button=False,
+        test_name="TC_PEMINDAH_TANGANAN_001",
+    )
+    time.sleep(3)
+
 
 if __name__ == "__main__":
     unittest.main()
+
