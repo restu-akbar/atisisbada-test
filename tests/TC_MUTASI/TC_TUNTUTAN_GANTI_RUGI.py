@@ -78,202 +78,267 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
         except Exception as e:
             print(f"[⚠️] Gagal menutup tab atau berpindah: {e}")
 
-    # @unittest.skip("test")
+    @unittest.skip("Buat TGR")
     def test_TC_TUNTUTAN_GANTI_RUGI_001(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_001")
-        print("Buat")
-        driver = self.driver
-        user = os.getenv("user")
-        href_button(driver, "javascript:gantirugi.KetetapanTanpaUsulan(1)")
-        time.sleep(1)
-        
-        #tombol 'cari' di form TTG baru
-        button(driver,By.CSS_SELECTOR,"#gantirugi_form_div > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(3) > input[type=button]:nth-child(3)")
-        time.sleep(6)
-        
-        filter_formgantirugi(driver,self.__class__.nibar)
-        
-        time.sleep(1)
-        checkbox(driver, identifier=0, by="index", table_selector="table#penatausahaanTable.koptable")
-        time.sleep(1)
-        button(driver,By.CSS_SELECTOR,"#div_border > table > tbody > tr:nth-child(3) > td > div > div > input[type=button]:nth-child(1)")
-        time.sleep(1)
-        
-        form_input(driver,By.ID,"no_sk","12334321")
-        form_input(driver,By.ID,"harga",12000000) #12 jt
-        form_input(driver,By.ID,"kepada_nama", user)
-        form_input(driver,By.ID,"kepada_alamat","Alamat " + user)
-        form_input(driver,By.ID,"uraian", "testing" + user)
-        form_input(driver,By.ID,"ket", "Auto testing")
-        
-        
-        button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(7)")
-        
-        save_get_alert(
-            driver,
-            expected="Berhasil disimpan",
-            with_button=False,
-            test_name="TC_TUNTUTAN_GANTI_RUGI_001",
-        )
+        Buat_TGR(self.driver,self.url, self.nibar)
         time.sleep(2)
     
-    #edit
-    # @unittest.skip("Bug")
+    @unittest.skip("Edit TGR")
     def test_TC_TUNTUTAN_GANTI_RUGI_002(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_002")
-        print("Edit")
-        driver = self.driver
-        user = os.getenv("user")
-        driver.get(f"{self.url}pages.php?Pg=gantirugi")
-        time.sleep(3)
-        filter_gantirugi(driver, self.__class__.nibar)
+        Edit_TGR(self.driver,self.url, self.nibar)
+        time.sleep(2)
         
-        time.sleep(1)
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        
-        href_button(driver, "javascript:gantirugi.Edit()")
-        
-        form_input(driver,By.ID,"no_sk","9999")
-        
-        # hutang = get_value_form(driver,By.ID,"harga")
-        # form_input(driver,By.ID,"harga",hutang - 100) 
-        
-        form_input(driver,By.ID,"kepada_nama", user)
-        form_input(driver,By.ID,"kepada_alamat","Alamat edit " + user)
-        form_input(driver,By.ID,"uraian", "testing edit" + user)
-        form_input(driver,By.ID,"ket", "Auto testing edit")
-        
-        button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(7)")
-        
-        save_get_alert(
-            driver,
-            expected="Data Berhasil disimpan",
-            with_button=False,
-            test_name="TC_TUNTUTAN_GANTI_RUGI_001",
-        )
-        
-    @unittest.skip("Delete Ganti Rugi")
+    @unittest.skip("Buat Pembayaran TGR")
     def test_TC_TUNTUTAN_GANTI_RUGI_003(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_003")
-        print("Batal")
-        driver = self.driver
-        user = os.getenv("user")
-        driver.get(f"{self.url}pages.php?Pg=gantirugi")
-        time.sleep(3)
-        filter_gantirugi(driver, self.__class__.nibar)
-        
-        time.sleep(1)
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(1)
-        
-        href_button(driver, "javascript:gantirugi.Hapus()")
-        
-        time.sleep(2)
-        alert = Alert(driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
+        Buat_Pembayaran(self.driver,self.url, self.nibar)
         time.sleep(2)
         
+    @unittest.skip("Edit Jadi Lunas")
+    def test_TC_TUNTUTAN_GANTI_RUGI_004(self):
+        print("test_TC_TUNTUTAN_GANTI_RUGI_004")
+        Edit_Pembayaran(self.driver,self.url, self.nibar)
+        time.sleep(2)
+        
+    @unittest.skip("Batal Pembayaran")
+    def test_TC_TUNTUTAN_GANTI_RUGI_005(self):
+        print("test_TC_TUNTUTAN_GANTI_RUGI_005")
+        Batal_Pembayaran(self.driver,self.url, self.nibar)
+        time.sleep(2)
+    
+    @unittest.skip("Batal TGR")
+    def test_TC_TUNTUTAN_GANTI_RUGI_006(self):
+        print("test_TC_TUNTUTAN_GANTI_RUGI_006")
+        Batal_TGR(self.driver,self.url, self.nibar)
+        
+    # Sehabis ini adalah Versi Validasi yang di jalankan sendiri sendiri
+    
+    @unittest.skip("Membatalkan TGR yang sudah pernah dibayar")    
+    def test_TC_TUNTUTAN_GANTI_RUGI_007(self):
+        print("test_TC_TUNTUTAN_GANTI_RUGI_007")
+        Buat_TGR(self.driver,self.url, self.nibar)
+        time.sleep(2)
+        Buat_Pembayaran(self.driver,self.url, self.nibar)
+        time.sleep(2)
+        Batal_TGR(self.driver,self.url, self.nibar,Pembayaran=True)
+        
+        Batal_Pembayaran(self.driver,self.url, self.nibar)
+        Batal_TGR(self.driver,self.url, self.nibar)
+        
+    @unittest.skip("Buat Pembayaran dengan harga lebih dari sisa")    
+    def test_TC_TUNTUTAN_GANTI_RUGI_008(self):
+        print("test_TC_TUNTUTAN_GANTI_RUGI_008")
+        
+        Buat_TGR(self.driver,self.url, self.nibar)
+        time.sleep(2)
+        Buat_Pembayaran(self.driver,self.url, self.nibar) #add Pembayaran pertama
+        time.sleep(2)
+        Edit_Pembayaran(self.driver,self.url, self.nibar) #edit jadi lunas
+        time.sleep(2)
+        Buat_Pembayaran(self.driver,self.url, self.nibar,Lunas=True) #add Pembayaran kedua dengan nominal lebih dari sisa (0)
+        time.sleep(2)
+        
+        Batal_Pembayaran(self.driver,self.url, self.nibar)
+        Batal_TGR(self.driver,self.url, self.nibar)
+        
+
+def Buat_TGR(driver, url,nibar):
+    print("Buat Tuntutan Ganti Rugi")
+    driver.get(f"{url}pages.php?Pg=gantirugi")
+    user = os.getenv("user")
+    href_button(driver, "javascript:gantirugi.KetetapanTanpaUsulan(1)")
+    time.sleep(1)
+        
+    #tombol 'cari' di form TTG baru
+    button(driver,By.CSS_SELECTOR,"#gantirugi_form_div > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(3) > input[type=button]:nth-child(3)")
+    time.sleep(6)
+        
+    filter_formgantirugi(driver,nibar)
+        
+    time.sleep(1)
+    checkbox(driver, identifier=0, by="index", table_selector="table#penatausahaanTable.koptable")
+    time.sleep(1)
+    button(driver,By.CSS_SELECTOR,"#div_border > table > tbody > tr:nth-child(3) > td > div > div > input[type=button]:nth-child(1)")
+    time.sleep(1)
+        
+    form_input(driver,By.ID,"no_sk","12334321")
+    form_input(driver,By.ID,"harga",12000000) #12 jt
+    form_input(driver,By.ID,"kepada_nama", user)
+    form_input(driver,By.ID,"kepada_alamat","Alamat " + user)
+    form_input(driver,By.ID,"uraian", "testing" + user)
+    form_input(driver,By.ID,"ket", "Auto testing")
+        
+        
+    button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(7)")
+        
+    save_get_alert(
+        driver,
+        expected="Berhasil disimpan",
+        with_button=False,
+        test_name="TC_TUNTUTAN_GANTI_RUGI_001",
+    )
+    pass
+
+def Edit_TGR(driver, url,nibar):
+    print("Edit Tuntutan Ganti Rugi")
+    user = os.getenv("user")
+    driver.get(f"{url}pages.php?Pg=gantirugi")
+    time.sleep(3)
+    filter_gantirugi(driver, nibar)
+        
+    time.sleep(1)
+    checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+    time.sleep(1)
+        
+    href_button(driver, "javascript:gantirugi.Edit()")
+        
+    form_input(driver,By.ID,"no_sk","9999")
+        
+    # hutang = get_value_form(driver,By.ID,"harga")
+    # form_input(driver,By.ID,"harga",hutang - 100) 
+        
+    form_input(driver,By.ID,"kepada_nama", user)
+    form_input(driver,By.ID,"kepada_alamat","Alamat edit " + user)
+    form_input(driver,By.ID,"uraian", "testing edit" + user)
+    form_input(driver,By.ID,"ket", "Auto testing edit")
+        
+    button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(7)")
+        
+    save_get_alert(
+        driver,
+        expected="Data Berhasil disimpan",
+        with_button=False,
+        test_name="TC_TUNTUTAN_GANTI_RUGI_001",
+    )
+    
+def Batal_TGR(driver, url,nibar,Pembayaran=False):
+    print("Batal TGR")
+    user = os.getenv("user")
+    driver.get(f"{url}pages.php?Pg=gantirugi")
+    time.sleep(3)
+    filter_gantirugi(driver, nibar)
+        
+    time.sleep(1)
+    checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+    time.sleep(1)
+        
+    href_button(driver, "javascript:gantirugi.Hapus()")
+        
+    time.sleep(2)
+    alert = Alert(driver)
+    alert_text = alert.text
+    print(f"ℹ️ Alert muncul: {alert_text}")
+    alert.accept()
+    time.sleep(2)
+    
+    if not Pembayaran:
         save_get_alert(
             driver,
             expected="Sukses Batal",
             with_button=False,
             test_name="TC_TUNTUTAN_GANTI_RUGI_003",
         )
-        
-    # @unittest.skip("Bug")
-    def test_TC_TUNTUTAN_GANTI_RUGI_004(self):
-        print("test_TC_TUNTUTAN_GANTI_RUGI_004")
-        print("Buat Pembayaran")
-        driver = self.driver
-        driver.get(f"{self.url}pages.php?Pg=gantirugibayar")
-        time.sleep(3)
-        href_button(driver, "javascript:gantirugibayar.Baru()")
-        time.sleep(1)
-        # button Cari Pembayaran
-        button(driver,By.CSS_SELECTOR,"#gantirugibayar_form_div > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > input[type=button]")
-        time.sleep(1)
-        filter_formgantirugiPembayaran(driver, self.__class__.nibar) 
-        time.sleep(1)
-        checkbox(driver, identifier="gantirugi_cari_cb0", by="id")
-        time.sleep(1)
-        #button Simpan the alert is here !
-        button(driver,By.CSS_SELECTOR,"#div_border > table > tbody > tr:nth-child(3) > td > div > div > input[type=button]:nth-child(1)")
-        time.sleep(1)
-        
-        form_input(driver,By.ID,"bayar",100)
-        form_input(driver,By.ID,"dari_nama","receipt Testing")
-        form_input(driver,By.ID,"ket","Auto Testing Pembayaran TGR")
-        
-        button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(5)")
-        
-        
-        print_result("Selesai", "Selesai", "TC_TUNTUTAN_GANTI_RUGI_004")
-        
-        # tidak ada Alert
-        # save_get_alert(
-        #     driver,
-        #     expected="Selesai",
-        #     with_button=False,
-        #     test_name="TC_TUNTUTAN_GANTI_RUGI_004",
-        # )
-        
-    #Edit Di Lunas Kan
-    def test_TC_TUNTUTAN_GANTI_RUGI_005(self):
-        print("test_TC_TUNTUTAN_GANTI_RUGI_005")
-        print("Edit Pembayaran Menjadi Lunas")
-        driver = self.driver
-        driver.get(f"{self.url}pages.php?Pg=gantirugibayar")
-        time.sleep(3)
-        filter_gantirugi(driver, self.__class__.nibar)
-        time.sleep(2)
-        checkbox(driver, identifier=-1, by="index", table_selector="table.koptable")
-        time.sleep(2)
-        href_button(driver, "javascript:gantirugibayar.Edit()")
-        time.sleep(3)
-        
-        harga = get_value_form(driver,By.ID,"sisa_bayar")
-        jumlah_ketetapan = parse_currency(harga)
-        
-        form_input(driver,By.ID,"bayar",jumlah_ketetapan)
-        form_input(driver,By.ID,"dari_nama","receipt Testing")
-        form_input(driver,By.ID,"ket","Auto Testing Edit Lunas")
-        time.sleep(5)
-        button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(5)")
-        print_result("Selesai", "Selesai", "TC_TUNTUTAN_GANTI_RUGI_005")
-        time.sleep(10)
-    
-    
-    #Batal
-    # @unittest.skip("Bug")
-    def test_TC_TUNTUTAN_GANTI_RUGI_006(self):
-        print("test_TC_TUNTUTAN_GANTI_RUGI_006")
-        print("Batal Kan yang Lunas")
-        driver = self.driver
-        driver.get(f"{self.url}pages.php?Pg=gantirugibayar")
-        time.sleep(3)
-        filter_gantirugi(driver, self.__class__.nibar)
-        time.sleep(2)
-        checkbox(driver, identifier=-1, by="index", table_selector="table.koptable")
-        time.sleep(2)
-        href_button(driver, "javascript:gantirugibayar.Hapus()")
-        time.sleep(3)
-        
-        time.sleep(2)
-        alert = Alert(driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
-        time.sleep(2)
-        
+    else:
         save_get_alert(
             driver,
-            expected="Sukses Hapus Data",
+            expected="Tidak bisa Dihapus, Sudah Ada Pembayaran!",
             with_button=False,
-            test_name="TC_TUNTUTAN_GANTI_RUGI_003",
+            test_name="TC_TUNTUTAN_GANTI_RUGI_007",
         )
+
         
+        
+def Buat_Pembayaran(driver, url,nibar,Lunas=False):
+    print("Buat Pembayaran")
+    driver.get(f"{url}pages.php?Pg=gantirugibayar")
+    time.sleep(3)
+    href_button(driver, "javascript:gantirugibayar.Baru()")
+    time.sleep(1)
+    # button Cari Pembayaran
+    button(driver,By.CSS_SELECTOR,"#gantirugibayar_form_div > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td:nth-child(3) > input[type=button]")
+    time.sleep(1)
+    filter_formgantirugiPembayaran(driver, nibar) 
+    time.sleep(1)
+    checkbox(driver, identifier="gantirugi_cari_cb0", by="id")
+    time.sleep(1)
+    #button Simpan the alert is here !
+    button(driver,By.CSS_SELECTOR,"#div_border > table > tbody > tr:nth-child(3) > td > div > div > input[type=button]:nth-child(1)")
+    time.sleep(1)
+    
+    if Lunas:
+        save_get_alert(
+            driver,
+            expected="Barang yang dipilih Sudah Lunas!",
+            with_button=False,
+            test_name="TC_TUNTUTAN_GANTI_RUGI_008",
+        )
+        return
+        
+    form_input(driver,By.ID,"bayar",100)
+    form_input(driver,By.ID,"dari_nama","receipt Testing")
+    form_input(driver,By.ID,"ket","Auto Testing Pembayaran TGR")
+        
+    button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(5)")
+            
+    print_result("Selesai", "Selesai", "TC_TUNTUTAN_GANTI_RUGI_004")
+        
+    # tidak ada Alert
+    # save_get_alert(
+    #     driver,
+    #     expected="Selesai",
+    #     with_button=False,
+    #     test_name="TC_TUNTUTAN_GANTI_RUGI_004",
+    # )
+    
+def Edit_Pembayaran(driver,url,nibar):
+    print("Edit Pembayaran Menjadi Lunas")
+    driver.get(f"{url}pages.php?Pg=gantirugibayar")
+    time.sleep(3)
+    filter_gantirugi(driver, nibar)
+    time.sleep(2)
+    checkbox(driver, identifier=-1, by="index", table_selector="table.koptable")
+    time.sleep(2)
+    href_button(driver, "javascript:gantirugibayar.Edit()")
+    time.sleep(3)
+        
+    harga = get_value_form(driver,By.ID,"sisa_bayar")
+    jumlah_ketetapan = parse_currency(harga)
+        
+    form_input(driver,By.ID,"bayar",jumlah_ketetapan)
+    form_input(driver,By.ID,"dari_nama","receipt Testing")
+    form_input(driver,By.ID,"ket","Auto Testing Edit Lunas")
+    time.sleep(5)
+    button(driver,By.CSS_SELECTOR,"#div_border > div:nth-child(3) > div > input[type=button]:nth-child(5)")
+    print_result("Selesai", "Selesai", "TC_TUNTUTAN_GANTI_RUGI_005")
+      
+def Batal_Pembayaran(driver,url,nibar):
+    print("Batal Kan yang Lunas")
+    driver.get(f"{url}pages.php?Pg=gantirugibayar")
+    time.sleep(3)
+    filter_gantirugi(driver, nibar)
+    time.sleep(2)
+    checkbox(driver, identifier=-1, by="index", table_selector="table.koptable")
+    time.sleep(2)
+    href_button(driver, "javascript:gantirugibayar.Hapus()")
+    time.sleep(3)
+        
+    time.sleep(2)
+    alert = Alert(driver)
+    alert_text = alert.text
+    print(f"ℹ️ Alert muncul: {alert_text}")
+    alert.accept()
+    time.sleep(2)
+        
+    save_get_alert(
+        driver,
+        expected="Sukses Hapus Data",
+        with_button=False,
+        test_name="TC_TUNTUTAN_GANTI_RUGI_003",
+    )    
+
 if __name__ == "__main__":
     unittest.main()
+    
+    
