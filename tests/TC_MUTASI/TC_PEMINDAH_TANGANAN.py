@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from components.dropdown import Dropdown
-from components.form_input import form_input,get_value_form
+from components.form_input import form_input, get_value_form
 from components.button import button
 from components.checkbox import checkbox
 from helpers.filter_nibar import filter_nibar_pembukuan
@@ -13,7 +13,7 @@ from helpers.driver_setup import create_driver
 from helpers.logout_helper import logout
 from helpers.PM.save_get_alert import save_get_alert
 from helpers.print_result import print_result
-from helpers.Pengamanan import PengamananPM,BatalPengamananPM
+from helpers.Pengamanan import PengamananPM, BatalPengamananPM
 
 from selenium.webdriver.common.alert import Alert
 from pages.login_page import LoginPage
@@ -40,14 +40,14 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        try:
-            logout(cls.driver)
-        except Exception as e:
-            print(f"⚠️ Logout gagal: {e}")
-        finally:
-            cls.driver.quit()
-
-        # cls.driver.quit()
+        #         try:
+        #             logout(cls.driver)
+        #         except Exception as e:
+        #             print(f"⚠️ Logout gagal: {e}")
+        #         finally:
+        #             cls.driver.quit()
+        #
+        cls.driver.quit()
 
     def switch_to_main_window(driver):
         """Force switch to the first (main) window."""
@@ -78,17 +78,57 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         except Exception as e:
             print(f"[⚠️] Gagal menutup tab atau berpindah: {e}")
 
-    # @unittest.skip("test")
     def test_TC_PEMINDAH_TANGANAN_001(self):
-        flow_pemindahtanganan_001(self.driver,self.url, self.nibar)
+        print("test_TC_PEMINDAH_TANGANAN_001")
+        PengamananPM(self.driver, self.nibar)
+        flow_pemindahtanganan_001(self.driver, self.url, self.nibar, pengamanan=True)
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
+        BatalPengamananPM(self.driver, self.nibar)
 
-    # @unittest.skip("Ubah")
     def test_TC_PEMINDAH_TANGANAN_002(self):
         print("test_TC_PEMINDAH_TANGANAN_002")
+        flow_pemindahtanganan_001(self.driver, self.url, self.nibar)
+        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
+        time.sleep(2)
+        self.flow_ubah()
+        self.flow_batal()
+
+    def test_TC_PEMINDAH_TANGANAN_003(self):
+        print("test_TC_PEMINDAH_TANGANAN_003")
+        flow_pemindahtanganan_001(self.driver, self.url, self.nibar, jenis=1)
+        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
+        time.sleep(2)
+        self.flow_ubah("index.php?Pg=10&bentuk=1")
+        self.flow_batal("index.php?Pg=10&bentuk=1")
+
+    def test_TC_PEMINDAH_TANGANAN_004(self):
+        print("test_TC_PEMINDAH_TANGANAN_004")
+        flow_pemindahtanganan_001(self.driver, self.url, self.nibar, jenis=2)
+        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
+        time.sleep(2)
+        self.flow_ubah("index.php?Pg=10&bentuk=2")
+        self.flow_batal("index.php?Pg=10&bentuk=2")
+
+    def test_TC_PEMINDAH_TANGANAN_005(self):
+        print("test_TC_PEMINDAH_TANGANAN_005")
+        flow_pemindahtanganan_001(self.driver, self.url, self.nibar, jenis=3)
+        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
+        time.sleep(2)
+        self.flow_ubah("index.php?Pg=10&bentuk=3")
+        self.flow_batal("index.php?Pg=10&bentuk=3")
+
+    def test_TC_PEMINDAH_TANGANAN_006(self):
+        print("test_TC_PEMINDAH_TANGANAN_006")
+        flow_pemindahtanganan_001(self.driver, self.url, self.nibar, jenis=3)
+        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
+        time.sleep(2)
+        self.flow_ubah("index.php?Pg=10&bentuk=4")
+        self.flow_batal("index.php?Pg=10&bentuk=4")
+
+    def flow_ubah(self, endpoint="index.php?Pg=10"):
         driver = self.driver
-        driver.get(f"{self.url}index.php?Pg=10")
+        driver.get(f"{self.url}{endpoint}")
         time.sleep(2)
         form_input(driver, By.ID, "fmIDBARANGCARI", self.__class__.nibar)
         button(driver, By.ID, "btTampil")
@@ -116,14 +156,11 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
             with_button=False,
             test_name="TC_PEMINDAH_TANGANAN_002",
         )
-
         time.sleep(3)
 
-    # @unittest.skip("delete")
-    def test_TC_PEMINDAH_TANGANAN_003(self):
-        print("test_TC_PEMINDAH_TANGANAN_003")
+    def flow_batal(self, endpoint="index.php?Pg=10"):
         driver = self.driver
-        driver.get(f"{self.url}index.php?Pg=10")
+        driver.get(f"{self.url}{endpoint}")
         time.sleep(2)
         form_input(driver, By.ID, "fmIDBARANGCARI", self.__class__.nibar)
         button(driver, By.ID, "btTampil")
@@ -147,19 +184,9 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         )
 
         time.sleep(3)
-        
-    def test_TC_PEMINDAH_TANGANAN_004(self):
-        print("test_TC_PEMINDAH_TANGANAN_004")
-        PengamananPM(self.driver,self.nibar)
-        flow_pemindahtanganan_001(self.driver,self.url, self.nibar,pengamanan= True)
-        TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
-        time.sleep(2)
-        BatalPengamananPM(self.driver,self.nibar)
 
 
-def flow_pemindahtanganan_001(driver, url,nibar,pengamanan=False):
-    print("test_TC_PEMINDAH_TANGANAN_001")
-    
+def flow_pemindahtanganan_001(driver, url, nibar, jenis=1, pengamanan=False):
     driver.get(f"{url}index.php?Pg=05&SPg=03&jns=tetap")
     filter_nibar_pembukuan(driver, nibar)
     time.sleep(1)
@@ -172,7 +199,7 @@ def flow_pemindahtanganan_001(driver, url,nibar,pengamanan=False):
     alert_text = alert.text
     print(f"ℹ️ Alert muncul: {alert_text}")
     alert.accept()
-    time.sleep(2)
+    time.sleep(1)
 
     handles = driver.window_handles
     if len(handles) > 1:
@@ -180,7 +207,7 @@ def flow_pemindahtanganan_001(driver, url,nibar,pengamanan=False):
         time.sleep(2)
         form_input(driver, By.ID, "no_sk", "999123")
 
-        Dropdown(driver, "fmBENTUKPEMINDAHTANGANAN", "1")
+        Dropdown(driver, identifier="fmBENTUKPEMINDAHTANGANAN", value=jenis)
         time.sleep(3)
         form_input(driver, By.ID, "ket", "Auto testing Keterangan")
         time.sleep(3)
@@ -200,13 +227,12 @@ def flow_pemindahtanganan_001(driver, url,nibar,pengamanan=False):
             with_button=False,
             test_name="TC_PEMINDAH_TANGANAN_004",
         )
-        errmsg = get_value_form(driver,By.ID,"errmsg")
+        errmsg = get_value_form(driver, By.ID, "errmsg")
         print(f"ℹ️ Error Message: {errmsg}")
         time.sleep(4)
-    
+
     time.sleep(3)
 
 
 if __name__ == "__main__":
     unittest.main()
-
