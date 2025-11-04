@@ -92,7 +92,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
         self.flow_ubah()
-        self.flow_batal()
+        flow_batal(self.driver, self.url, self.nibar)
 
     def test_TC_PEMINDAH_TANGANAN_003(self):
         print("test_TC_PEMINDAH_TANGANAN_003")
@@ -100,7 +100,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
         self.flow_ubah("index.php?Pg=10&bentuk=1")
-        self.flow_batal("index.php?Pg=10&bentuk=1")
+        flow_batal(self.driver, self.url, self.nibar, "index.php?Pg=10&bentuk=1")
 
     def test_TC_PEMINDAH_TANGANAN_004(self):
         print("test_TC_PEMINDAH_TANGANAN_004")
@@ -108,7 +108,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
         self.flow_ubah("index.php?Pg=10&bentuk=2")
-        self.flow_batal("index.php?Pg=10&bentuk=2")
+        flow_batal(self.driver, self.url, self.nibar, "index.php?Pg=10&bentuk=2")
 
     def test_TC_PEMINDAH_TANGANAN_005(self):
         print("test_TC_PEMINDAH_TANGANAN_005")
@@ -116,7 +116,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
         self.flow_ubah("index.php?Pg=10&bentuk=3")
-        self.flow_batal("index.php?Pg=10&bentuk=3")
+        flow_batal(self.driver, self.url, self.nibar, "index.php?Pg=10&bentuk=3")
 
     def test_TC_PEMINDAH_TANGANAN_006(self):
         print("test_TC_PEMINDAH_TANGANAN_006")
@@ -124,7 +124,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
         self.flow_ubah("index.php?Pg=10&bentuk=4")
-        self.flow_batal("index.php?Pg=10&bentuk=4")
+        flow_batal(self.driver, self.url, self.nibar, "index.php?Pg=10&bentuk=4")
 
     def flow_ubah(self, endpoint="index.php?Pg=10"):
         driver = self.driver
@@ -158,32 +158,32 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
         )
         time.sleep(3)
 
-    def flow_batal(self, endpoint="index.php?Pg=10"):
-        driver = self.driver
-        driver.get(f"{self.url}{endpoint}")
-        time.sleep(2)
-        form_input(driver, By.ID, "fmIDBARANGCARI", self.__class__.nibar)
-        button(driver, By.ID, "btTampil")
-        time.sleep(2)
-        checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
-        time.sleep(2)
-        href_button(driver, "javascript:Pindahtangan.Hapus()")
-        time.sleep(2)
 
-        alert = Alert(driver)
-        alert_text = alert.text
-        print(f"ℹ️ Alert muncul: {alert_text}")
-        alert.accept()
-        time.sleep(3)
+def flow_batal(driver, url, nibar, endpoint="index.php?Pg=10"):
+    driver.get(f"{url}{endpoint}")
+    time.sleep(2)
+    form_input(driver, By.ID, "fmIDBARANGCARI", nibar)
+    button(driver, By.ID, "btTampil")
+    time.sleep(2)
+    checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
+    time.sleep(2)
+    href_button(driver, "javascript:Pindahtangan.Hapus()")
+    time.sleep(2)
 
-        save_get_alert(
-            driver,
-            expected="Sukses Hapus Data",
-            with_button=False,
-            test_name="TC_PEMINDAH_TANGANAN_003",
-        )
+    alert = Alert(driver)
+    alert_text = alert.text
+    print(f"ℹ️ Alert muncul: {alert_text}")
+    alert.accept()
+    time.sleep(3)
 
-        time.sleep(3)
+    save_get_alert(
+        driver,
+        expected="Sukses Hapus Data",
+        with_button=False,
+        test_name="TC_PEMINDAH_TANGANAN_003",
+    )
+
+    time.sleep(3)
 
 
 def flow_pemindahtanganan_001(driver, url, nibar, jenis=1, pengamanan=False):
@@ -194,7 +194,6 @@ def flow_pemindahtanganan_001(driver, url, nibar, jenis=1, pengamanan=False):
     time.sleep(1)
     href_button(driver, "javascript:pemindahtanganan_ins.pemindahtangananbaru()()")
     time.sleep(2)
-
     alert = Alert(driver)
     alert_text = alert.text
     print(f"ℹ️ Alert muncul: {alert_text}")
