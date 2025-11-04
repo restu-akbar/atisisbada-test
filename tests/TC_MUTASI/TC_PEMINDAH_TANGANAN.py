@@ -40,14 +40,14 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        #         try:
-        #             logout(cls.driver)
-        #         except Exception as e:
-        #             print(f"⚠️ Logout gagal: {e}")
-        #         finally:
-        #             cls.driver.quit()
-        #
-        cls.driver.quit()
+        try:
+            logout(cls.driver)
+        except Exception as e:
+            print(f"⚠️ Logout gagal: {e}")
+        finally:
+            cls.driver.quit()
+
+    #         cls.driver.quit()
 
     def switch_to_main_window(driver):
         """Force switch to the first (main) window."""
@@ -120,7 +120,7 @@ class TC_PEMINDAH_TANGANAN(unittest.TestCase):
 
     def test_TC_PEMINDAH_TANGANAN_006(self):
         print("test_TC_PEMINDAH_TANGANAN_006")
-        flow_pemindahtanganan_001(self.driver, self.url, self.nibar, jenis=3)
+        flow_pemindahtanganan_001(self.driver, self.url, self.nibar, jenis=4)
         TC_PEMINDAH_TANGANAN.switch_to_main_window(self.driver)
         time.sleep(2)
         self.flow_ubah("index.php?Pg=10&bentuk=4")
