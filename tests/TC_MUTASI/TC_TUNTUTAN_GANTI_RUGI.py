@@ -115,7 +115,7 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
         
     # Sehabis ini adalah Versi Validasi yang di jalankan sendiri sendiri
     
-    @unittest.skip("Membatalkan TGR yang sudah pernah dibayar")    
+    # @unittest.skip("Membatalkan TGR yang sudah pernah dibayar")    
     def test_TC_TUNTUTAN_GANTI_RUGI_007(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_007")
         Buat_TGR(self.driver,self.url, self.nibar)
@@ -127,17 +127,15 @@ class TC_TUNTUTAN_GANTI_RUGI(unittest.TestCase):
         Batal_Pembayaran(self.driver,self.url, self.nibar)
         Batal_TGR(self.driver,self.url, self.nibar)
         
-    @unittest.skip("Buat Pembayaran dengan harga lebih dari sisa")    
+    # @unittest.skip("Buat Pembayaran dengan harga lebih dari sisa")    
     def test_TC_TUNTUTAN_GANTI_RUGI_008(self):
         print("test_TC_TUNTUTAN_GANTI_RUGI_008")
         
         Buat_TGR(self.driver,self.url, self.nibar)
         time.sleep(2)
-        Buat_Pembayaran(self.driver,self.url, self.nibar) #add Pembayaran pertama
+        Buat_Pembayaran(self.driver,self.url, self.nibar,lunasin=True) #add Pembayaran pertama
         time.sleep(2)
-        Edit_Pembayaran(self.driver,self.url, self.nibar) #edit jadi lunas
-        time.sleep(2)
-        Buat_Pembayaran(self.driver,self.url, self.nibar,Lunas=True) #add Pembayaran kedua dengan nominal lebih dari sisa (0)
+        Buat_Pembayaran(self.driver,self.url, self.nibar, sudah_lunas=True) #add Pembayaran kedua denan lebih dari lunas
         time.sleep(2)
         
         Batal_Pembayaran(self.driver,self.url, self.nibar)
@@ -250,7 +248,7 @@ def Batal_TGR(driver, url,nibar,Pembayaran=False):
 
         
         
-def Buat_Pembayaran(driver, url,nibar,Lunas=False):
+def Buat_Pembayaran(driver, url,nibar,lunasin=False ,sudah_lunas=False):
     print("Buat Pembayaran")
     driver.get(f"{url}pages.php?Pg=gantirugibayar")
     time.sleep(3)
@@ -267,7 +265,7 @@ def Buat_Pembayaran(driver, url,nibar,Lunas=False):
     button(driver,By.CSS_SELECTOR,"#div_border > table > tbody > tr:nth-child(3) > td > div > div > input[type=button]:nth-child(1)")
     time.sleep(1)
     
-    if Lunas:
+    if sudah_lunas:
         save_get_alert(
             driver,
             expected="Barang yang dipilih Sudah Lunas!",
@@ -275,8 +273,14 @@ def Buat_Pembayaran(driver, url,nibar,Lunas=False):
             test_name="TC_TUNTUTAN_GANTI_RUGI_008",
         )
         return
+
+    if lunasin == True:
+        harga = get_value_form(driver,By.ID,"sisa_bayar")
+        jumlah_ketetapan = parse_currency(harga)
+    else:
+        jumlah_ketetapan = 100 #5 jt
         
-    form_input(driver,By.ID,"bayar",100)
+    form_input(driver,By.ID,"bayar",jumlah_ketetapan)
     form_input(driver,By.ID,"dari_nama","receipt Testing")
     form_input(driver,By.ID,"ket","Auto Testing Pembayaran TGR")
         

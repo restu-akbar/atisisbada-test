@@ -85,7 +85,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         except Exception as e:
             print(f"[⚠️] Gagal menutup tab atau berpindah: {e}")
 
-    @unittest.skip("Pemanfaatan Pinjam_Pakai")
+    # @unittest.skip("Pemanfaatan Pinjam_Pakai")
     def test_TC_PEMANFAATAN_EXTRA_001(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_001"
         print(tc)
@@ -95,7 +95,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         hapusPemanfaatan(self.driver,self.url,self.nibar, bentuk_pemanfaatan="Pinjam_Pakai",test_case=tc+"_delete")
         time.sleep(2)
         
-    @unittest.skip("Pemanfaatan Sewa")
+    # @unittest.skip("Pemanfaatan Sewa")
     def test_TC_PEMANFAATAN_EXTRA_002(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_002"
         print(tc)
@@ -145,7 +145,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         hapusPemanfaatan(self.driver,self.url,self.nibar, bentuk_pemanfaatan="Kerjasama_Penyediaan_Infrastruktur",test_case=tc+"_delete")
         time.sleep(2)
         
-    # @unittest.skip("Pemanfaatan Pinjam Pakai") #nibar 152430
+    @unittest.skip("Pemanfaatan Pinjam Pakai") #nibar 152430
     def test_TC_PEMANFAATAN_EXTRA_007(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_007"
         print(tc)
@@ -155,7 +155,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         hapusPemanfaatan(self.driver,self.url,self.nibar, bentuk_pemanfaatan="Pinjam_Pakai",test_case=tc+"_delete")
         time.sleep(2)
         
-    # @unittest.skip("Pemanfaatan Sewa")
+    @unittest.skip("Pemanfaatan Sewa")
     def test_TC_PEMANFAATAN_EXTRA_008(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_008"
         print(tc)
@@ -165,7 +165,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         hapusPemanfaatan(self.driver,self.url,self.nibar, bentuk_pemanfaatan="Sewa",test_case=tc+"_delete")
         time.sleep(2)
         
-    # @unittest.skip("Pemanfaatan Kerjasama_Pemanfaatan")
+    @unittest.skip("Pemanfaatan Kerjasama_Pemanfaatan")
     def test_TC_PEMANFAATAN_EXTRA_009(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_009"
         print(tc)
@@ -175,7 +175,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         hapusPemanfaatan(self.driver,self.url,self.nibar, bentuk_pemanfaatan="Kerjasama_Pemanfaatan",test_case=tc+"_delete")
         time.sleep(2)
         
-    # @unittest.skip("Pemanfaatan Bangun_Guna_Serah")
+    @unittest.skip("Pemanfaatan Bangun_Guna_Serah")
     def test_TC_PEMANFAATAN_EXTRA_010(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_010"
         print(tc)
@@ -185,7 +185,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         hapusPemanfaatan(self.driver,self.url,self.nibar, bentuk_pemanfaatan="Bangun_Guna_Serah",test_case=tc+"_delete")
         time.sleep(2)
         
-    # @unittest.skip("Pemanfaatan Bangun_Serah_Guna")
+    @unittest.skip("Pemanfaatan Bangun_Serah_Guna")
     def test_TC_PEMANFAATAN_EXTRA_011(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_011"
         print(tc)
@@ -195,7 +195,7 @@ class TC_PEMANFAATAN_EXTRA(unittest.TestCase):
         hapusPemanfaatan(self.driver,self.url,self.nibar, bentuk_pemanfaatan="Bangun_Serah_Guna",test_case=tc+"_delete")
         time.sleep(2)
         
-    # @unittest.skip("Pemanfaatan Kerjasama_Penyediaan_Infrastruktur")
+    @unittest.skip("Pemanfaatan Kerjasama_Penyediaan_Infrastruktur")
     def test_TC_PEMANFAATAN_EXTRA_012(self):
         tc = "test_TC_PEMANFAATAN_EXTRA_012"
         print(tc)
@@ -221,7 +221,7 @@ def buatPemanfaatan(driver,url,nibar, is_create=True, jangka_waktu="5",tipe_aset
     
     filter_nibar_pembukuan(driver,nibar)
     time.sleep(1)
-    checkbox(driver, identifier=0, by="index", table_selector="table.koptable")
+    checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
     href_button(driver, "javascript:pemanfaatanV2.formMulti()")
     
     # Look Up Table
@@ -299,7 +299,7 @@ def editPemanfaatan(driver,url,nibar, is_create=False, jangka_waktu="5", bentuk_
     filter_pengamanan(driver, nibar or "", "fmid")
     
     time.sleep(1)
-    checkbox(driver, identifier=0, by="index", table_selector="table.koptable")
+    checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
     href_button(driver, "javascript:PemanfaatForm.Edit()")
     
     today = datetime.now(ZoneInfo("Asia/Jakarta")).date()
@@ -369,7 +369,7 @@ def hapusPemanfaatan(driver,url,nibar, bentuk_pemanfaatan="Sewa",test_case="unkn
     filter_pengamanan(driver, nibar or "", "fmid")
     
     time.sleep(1)
-    checkbox(driver, identifier=0, by="index", table_selector="table.koptable")
+    checkbox(driver, identifier=1, by="index", table_selector="table.koptable")
     href_button(driver, "PemanfaatHapus.Hapus()")
     
     time.sleep(3)

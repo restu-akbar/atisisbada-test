@@ -6,6 +6,16 @@ from components.button import button
 from helpers.print_result import print_result
 
 
+
+import unicodedata
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+
+def normalize_text(text: str) -> str:
+    # Normalize Unicode (remove weird hidden chars)
+    return unicodedata.normalize("NFKC", text).strip()
+
 def save_get_alert(
     driver,
     expected=None,
@@ -27,7 +37,12 @@ def save_get_alert(
         actual = ""
 
     if expected is not None:
-        print_result(actual, expected, test_name)
+        # Normalize before comparison
+        actual_norm = normalize_text(actual)
+        expected_norm = normalize_text(expected)
+
+        if expected is not None:
+            print_result(actual_norm, expected_norm, test_name)
 
     if alert:
         if accept:
